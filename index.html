@@ -240,16 +240,136 @@
             user-select: text;
         }
 
-        .header-main h1 {
-            color: var(--primary-color);
-            font-size: 1.8rem;
+        .header-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 25px;
         }
 
+        .header-main h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Botão de toggle entre Grid e Lista */
+        .btn-toggle-view {
+            background-color: var(--primary-color);
+            color: white;
+            border: 2px solid var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-toggle-view:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* ============================================
+                   VISUALIZAÇÃO EM GRADE (PADRÃO)
+                   ============================================ */
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+        }
+
+        /* ============================================
+                   VISUALIZAÇÃO EM LISTA (COMPACTA)
+                   ============================================ */
+        .catalog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .catalog-list .music-card {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 15px;
+            border-top: 2px solid var(--accent-color);
+            border-radius: 4px;
+            min-height: 50px;
+        }
+
+        .catalog-list .music-card .music-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .catalog-list .music-card .music-info h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            color: var(--primary-color);
+        }
+
+        .catalog-list .music-card .music-meta {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            line-height: 1.2;
+        }
+
+        .catalog-list .music-card .music-meta p {
+            display: inline;
+        }
+
+        .catalog-list .music-card .music-meta .composer-label {
+            display: none;
+        }
+
+        .catalog-list .music-card .actions {
+            display: flex;
+            flex-direction: row;
+            gap: 6px;
+            margin-top: 0;
+            justify-content: flex-end;
+        }
+
+        .catalog-list .music-card .actions button {
+            width: auto;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border-radius: 3px;
+        }
+
+        .catalog-list .music-card .btn-view-pdf {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .catalog-list .music-card .btn-add-playlist {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .catalog-list .music-card .btn-play-now {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        .catalog-list .music-card .btn-play-now:hover {
+            background-color: #d35400;
+        }
+
+        .catalog-list .music-card.playing-now {
+            border-top-color: #e67e22;
+            background-color: #fffaf5;
         }
 
         .music-card {
@@ -289,7 +409,7 @@
             margin-top: 10px;
         }
 
-        .btn-view-pdf, .btn-add-playlist {
+        .btn-view-pdf, .btn-add-playlist, .btn-play-now {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -307,10 +427,12 @@
         .btn-view-pdf:hover { background-color: #149a80; }
         .btn-add-playlist { background-color: #34495e; color: white; }
         .btn-add-playlist:hover { background-color: #212f3d; }
+        .btn-play-now { background-color: #e67e22; color: white; }
+        .btn-play-now:hover { background-color: #d35400; }
 
-        /* PAINEL HORIZONTAL DO PLAYER (INFERIOR E REDUZIDO) */
+        /* PAINEL HORIZONTAL DO PLAYER */
         .player-horizontal-container {
-            height: 160px; /* Reduzido consideravelmente */
+            height: 160px;
             background-color: #2c3e50;
             border-top: 4px solid #e67e22;
             display: flex;
@@ -341,10 +463,9 @@
             color: #bdc3c7;
         }
 
-        /* Tamanho otimizado e menor do campo do Player */
         .player-horizontal-video-box {
-            width: 240px; /* Compacto */
-            height: 135px; /* Proporção 16:9 perfeita */
+            width: 240px;
+            height: 135px;
             background: #000;
             border-radius: 4px;
             overflow: hidden;
@@ -398,10 +519,31 @@
             aside.collapsed { margin-left: 0; display: none; }
             .resizer { display: none; }
             main { height: auto; padding-left: 20px; }
+            
+            .catalog-list .music-card {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 10px 15px;
+            }
+            .catalog-list .music-card .actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .catalog-list .music-card .actions button {
+                flex: 1;
+                min-width: 80px;
+            }
+            
             .player-horizontal-container { flex-direction: column; height: auto; align-items: stretch; }
             .player-horizontal-video-box { width: 100%; height: 200px; }
             .pdf-preview-panel { width: 100% !important; max-width: none; height: 600px; }
             .catalog-grid { grid-template-columns: 1fr; }
+            
+            .header-main {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -461,6 +603,11 @@
         <main>
             <div class="header-main">
                 <h1>NBM - Vídeos e Partituras</h1>
+                <div class="header-controls">
+                    <button class="btn-toggle-view" id="btnToggleView" onclick="toggleViewMode()">
+                        <span id="viewIcon">▦</span> <span id="viewLabel">Grade</span>
+                    </button>
+                </div>
             </div>
             <div class="catalog-grid" id="catalogGrid"></div>
         </main>
@@ -528,6 +675,7 @@
         let userPlaylist = []; 
         let activePlaylistIndex = -1;
         let currentlyPlayingMusicId = null;
+        let isListView = false;
 
         btnToggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
@@ -563,13 +711,29 @@
             pdfIframe.src = "";
         }
 
-        // API Carregada -> Inicializa Player Único Fixo
+        function toggleViewMode() {
+            isListView = !isListView;
+            const icon = document.getElementById('viewIcon');
+            const label = document.getElementById('viewLabel');
+            
+            if (isListView) {
+                icon.textContent = '☰';
+                label.textContent = 'Lista';
+                catalogGrid.className = 'catalog-list';
+            } else {
+                icon.textContent = '▦';
+                label.textContent = 'Grade';
+                catalogGrid.className = 'catalog-grid';
+            }
+            renderCatalog();
+        }
+
         function onYouTubeIframeAPIReady() {
             globalPlayer = new YT.Player('youtube-global-player', {
                 height: '100%',
                 width: '100%',
                 playerVars: {
-                    'origin': window.location.origin, // Mata o erro de postMessage no GitHub Pages
+                    'origin': window.location.origin,
                     'enablejsapi': 1,
                     'rel': 0,
                     'widget_referrer': window.location.href
@@ -588,7 +752,6 @@
             currentPlayingTitle.textContent = music.title;
             currentPlayingMeta.textContent = `${music.composer} | ${music.book}`;
 
-            // Destaca o card ativo no catálogo
             document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
             const card = document.getElementById(`card-${musicId}`);
             if (card) card.classList.add('playing-now');
@@ -596,6 +759,7 @@
             const ytId = localGetYouTubeId(music.youtubeUrl);
             if (ytId && globalPlayer && typeof globalPlayer.loadVideoById === 'function') {
                 globalPlayer.loadVideoById(ytId);
+                globalPlayer.playVideo();
             }
         }
 
@@ -616,6 +780,15 @@
             if (!userPlaylist.includes(musicId)) {
                 userPlaylist.push(musicId);
                 updatePlaylistUI();
+                const btn = document.querySelector(`#card-${musicId} .btn-add-playlist`);
+                if (btn) {
+                    btn.textContent = '✅ Adicionado!';
+                    btn.style.backgroundColor = '#27ae60';
+                    setTimeout(() => {
+                        btn.textContent = '➕ Adicionar à Fila';
+                        btn.style.backgroundColor = '#34495e';
+                    }, 1500);
+                }
             }
         }
 
@@ -627,9 +800,12 @@
         }
 
         function clearPlaylist() {
-            userPlaylist = [];
-            activePlaylistIndex = -1;
-            updatePlaylistUI();
+            if (userPlaylist.length === 0) return;
+            if (confirm('Tem certeza que deseja limpar a playlist?')) {
+                userPlaylist = [];
+                activePlaylistIndex = -1;
+                updatePlaylistUI();
+            }
         }
 
         function updatePlaylistUI() {
@@ -647,7 +823,7 @@
                     <div class="item-text" onclick="playPlaylistItem(${index})" title="${song.title}">
                         <strong>${index + 1}.</strong> ${song.title}
                     </div>
-                    <span class="remove-item" onclick="removeFromPlaylist(${index})">&span;</span>
+                    <span class="remove-item" onclick="removeFromPlaylist(${index})">&times;</span>
                 `;
                 playlistItemsContainer.appendChild(item);
             });
@@ -669,7 +845,7 @@
 
         function savePlaylistToStorage() {
             localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
-            alert("Fila de reprodução salva localmente!");
+            alert("✅ Fila de reprodução salva localmente!");
         }
 
         function loadPlaylistFromStorage() {
@@ -681,6 +857,10 @@
         }
 
         function exportPlaylistJSON() {
+            if (userPlaylist.length === 0) {
+                alert('A playlist está vazia!');
+                return;
+            }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userPlaylist));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -701,11 +881,12 @@
                         userPlaylist = parsed.map(Number).filter(id => !isNaN(id));
                         activePlaylistIndex = -1;
                         updatePlaylistUI();
-                        alert("Playlist importada!");
+                        alert("✅ Playlist importada com sucesso!");
                     }
-                } catch (err) { alert("Erro ao ler JSON."); }
+                } catch (err) { alert("❌ Erro ao ler JSON."); }
             };
             reader.readAsText(file);
+            event.target.value = '';
         }
 
         function renderCatalog() {
@@ -733,24 +914,29 @@
 
             filtered.forEach(music => {
                 const card = document.createElement('div');
-                // Mantém a marcação visual caso a música filtrada seja a atual em execução
                 card.className = `music-card ${music.id === currentlyPlayingMusicId ? 'playing-now' : ''}`;
                 card.id = `card-${music.id}`;
                 
                 const safeTitle = music.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
+                // Na visualização em lista, mostra apenas título e compositor na mesma linha
+                const isList = isListView;
+                
                 card.innerHTML = `
                     <div class="music-info">
                         <h3>${music.title}</h3>
                         <div class="music-meta">
-                            <p><strong>Compositor:</strong> ${music.composer}</p>
-                            <p><strong>Livro:</strong> ${music.book}</p>
+                            ${isList ? 
+                                `<p>${music.composer} ${music.book ? '| ' + music.book : ''}</p>` :
+                                `<p><strong>Compositor:</strong> ${music.composer}</p>
+                                 <p><strong>Livro:</strong> ${music.book}</p>`
+                            }
                         </div>
                     </div>
                     <div class="actions">
                         <button class="btn-view-pdf" onclick="openPdfPreview('${safeTitle}', '${music.pdfUrl}')">📄 Ver Partitura</button>
                         <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Fila</button>
-                        <button class="btn-add-playlist" style="background-color:#e67e22;" onclick="playMusic(${music.id})">▶️ Ouvir Agora</button>
+                        <button class="btn-play-now" onclick="playMusic(${music.id})">▶️ Ouvir Agora</button>
                     </div>
                 `;
                 catalogGrid.appendChild(card);

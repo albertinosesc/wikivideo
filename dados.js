@@ -6,7 +6,7 @@ const musicDatabase = [
         title: "A Casa", 
         composer: "Vinicius de Moraes / Toquinho", 
         book: "Arca de Noé", 
-        pdfUrl: "./partituras/a_casa.pdf", 
+        pdfUrl: "partituras/a_casa.pdf", 
         youtubeUrl: "https://www.youtube.com/watch?v=K3DEgVGA0Gs&list=RDK3DEgVGA0Gs&start_radio=1" 
     },
     { 
@@ -14,7 +14,7 @@ const musicDatabase = [
         title: "O Caderno", 
         composer: "Toquinho", 
         book: "Música na Infância Vol. 1", 
-        pdfUrl: "./partituras/o_caderno.pdf", 
+        pdfUrl: "partituras/o_caderno.pdf", 
         youtubeUrl: "https://www.youtube.com/watch?v=_0mpldsbZdc" 
     }
 ];

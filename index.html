@@ -371,11 +371,11 @@
     </style>
 </head>
 <body>
-<h1><img src="imagem/logo1.png" alt="NBM" style="height: 60px; width: auto;"></h1>
+
     <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
 
     <aside id="sidebar">
-        
+        <h1><img src="imagem/logo1.png" alt="NBM" style="height: 60px; width: auto;"></h1>
         <h2>Filtros e Busca</h2>
          
         <div class="form-group">
@@ -439,410 +439,334 @@
     </section>
 
     <script src="dados.js"></script>
-<script src="dados.js"></script>
-<script>
-    // Função interna e autônoma de extração de ID do YouTube
-    function localGetYouTubeId(url) {
-        if (!url) return null;
-        url = url.trim();
-        if (url.length === 11) return url;
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-    }
-
-    // Variáveis globais
-    let youtubePlayers = {};
-    let userPlaylist = [];
-    let activePlaylistIndex = -1;
-    let isApiReady = false;
-    let playersInitialized = false;
-
-    // Elementos DOM
-    const searchGeneral = document.getElementById('searchGeneral');
-    const filterComposer = document.getElementById('filterComposer');
-    const filterBook = document.getElementById('filterBook');
-    const viewModeRadios = document.getElementsByName('viewMode');
-    const catalogGrid = document.getElementById('catalogGrid');
-    const btnClear = document.getElementById('btnClear');
-    const playlistItemsContainer = document.getElementById('playlistItemsContainer');
-    const sidebar = document.getElementById('sidebar');
-    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-    const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
-    const resizerLeft = document.getElementById('resizerLeft');
-    const resizerRight = document.getElementById('resizerRight');
-    const pdfPreviewTitle = document.getElementById('pdfPreviewTitle');
-    const pdfIframe = document.getElementById('pdfIframe');
-    const btnClosePreview = document.getElementById('btnClosePreview');
-
-    // Carregar API do YouTube
-    function loadYouTubeAPI() {
-        if (typeof YT !== 'undefined' && YT.Player) {
-            isApiReady = true;
-            initializePlayers();
-            return;
+    <script>
+        // Função interna de extração de ID do YouTube
+        function localGetYouTubeId(url) {
+            if (!url) return null;
+            url = url.trim();
+            if (url.length === 11) return url;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Carregar a API
-        const tag = document.createElement('script');
+        // Carregamento da API do YouTube
+        let tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
+        let firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // Fallback caso a API não carregue
-        setTimeout(() => {
-            if (!isApiReady && typeof YT !== 'undefined' && YT.Player) {
-                isApiReady = true;
-                initializePlayers();
-            }
-        }, 5000);
-    }
+        const searchGeneral = document.getElementById('searchGeneral');
+        const filterComposer = document.getElementById('filterComposer');
+        const filterBook = document.getElementById('filterBook');
+        const viewModeRadios = document.getElementsByName('viewMode');
+        const catalogGrid = document.getElementById('catalogGrid');
+        const btnClear = document.getElementById('btnClear');
+        const playlistItemsContainer = document.getElementById('playlistItemsContainer');
+        const sidebar = document.getElementById('sidebar');
+        const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+        const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
+        const resizerLeft = document.getElementById('resizerLeft');
+        const resizerRight = document.getElementById('resizerRight');
+        const pdfPreviewTitle = document.getElementById('pdfPreviewTitle');
+        const pdfIframe = document.getElementById('pdfIframe');
+        const btnClosePreview = document.getElementById('btnClosePreview');
 
-    // Função chamada pela API do YouTube quando carregada
-    window.onYouTubeIframeAPIReady = function() {
-        isApiReady = true;
-        initializePlayers();
-    };
+        let youtubePlayers = {};
+        let userPlaylist = []; 
+        let activePlaylistIndex = -1;
+        let isApiReady = false;
 
-    // Inicializar todos os players
-    function initializePlayers() {
-        if (playersInitialized || !isApiReady) return;
-        
-        const targets = document.querySelectorAll('.youtube-player-target');
-        if (targets.length === 0) {
-            // Se não houver players, tentar novamente após renderização
-            setTimeout(() => initializePlayers(), 500);
-            return;
+        btnToggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            resizerLeft.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'flex';
+        });
+
+        function initFilters() {
+            if (typeof musicDatabase === 'undefined') return;
+            const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
+            const books = [...new Set(musicDatabase.map(m => m.book))].sort();
+            filterComposer.innerHTML = '<option value="">Compositores</option>';
+            filterBook.innerHTML = '<option value="">Referência</option>';
+            composers.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; filterComposer.appendChild(opt); });
+            books.forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; filterBook.appendChild(opt); });
         }
 
-        targets.forEach(target => {
-            const videoId = target.getAttribute('data-video-id');
-            const musicId = parseInt(target.getAttribute('data-music-id'), 10);
+        function getViewMode() {
+            let mode = 'all';
+            viewModeRadios.forEach(radio => { if (radio.checked) mode = radio.value; });
+            return mode;
+        }
+
+        function openPdfPreview(title, url) {
+            pdfPreviewTitle.textContent = `Partitura: ${title}`;
+            pdfIframe.src = url;
+            pdfPreviewPanel.style.display = 'flex';
+            resizerRight.style.display = 'flex'; 
+        }
+
+        function closePdfPreview() {
+            pdfPreviewPanel.style.display = 'none';
+            resizerRight.style.display = 'none'; 
+            pdfIframe.src = "";
+        }
+
+        // Esta função roda assim que o script externo do YouTube termina de carregar
+        function onYouTubeIframeAPIReady() {
+            isApiReady = true;
+            createYouTubePlayers();
+        }
+
+        function createYouTubePlayers() {
+            // Destrói instâncias antigas para não vazar memória
+            for (let id in youtubePlayers) {
+                if (youtubePlayers[id] && typeof youtubePlayers[id].destroy === 'function') {
+                    youtubePlayers[id].destroy();
+                }
+            }
+            youtubePlayers = {};
             
-            if (videoId && musicId && typeof YT !== 'undefined' && YT.Player) {
-                try {
+            const targets = document.querySelectorAll('.youtube-player-target');
+            targets.forEach(target => {
+                const videoId = target.getAttribute('data-video-id');
+                const musicId = parseInt(target.getAttribute('data-music-id'), 10);
+                
+                if (typeof YT !== 'undefined' && YT.Player && videoId) {
                     youtubePlayers[musicId] = new YT.Player(target.id, {
                         height: '100%',
                         width: '100%',
                         videoId: videoId,
-                        playerVars: {
-                            'autoplay': 0,
-                            'controls': 1,
-                            'rel': 0,
-                            'showinfo': 0
-                        },
                         events: {
-                            'onStateChange': function(event) {
-                                onPlayerStateChange(event, musicId);
-                            },
-                            'onError': function(error) {
-                                console.error('Erro no player:', error);
-                            }
+                            'onStateChange': (event) => onPlayerStateChange(event, musicId)
                         }
                     });
-                } catch (error) {
-                    console.error('Erro ao criar player:', error);
+                }
+            });
+        }
+
+        function onPlayerStateChange(event, musicId) {
+            const currentCard = document.getElementById(`card-${musicId}`);
+            if (event.data === YT.PlayerState.PLAYING) {
+                document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
+                if (currentCard) currentCard.classList.add('playing-now');
+                
+                let playlistIdx = userPlaylist.findIndex(id => id === musicId);
+                if(playlistIdx !== -1) {
+                    activePlaylistIndex = playlistIdx;
+                    updatePlaylistUI();
                 }
             }
-        });
-        
-        playersInitialized = true;
-    }
-
-    // Função para recriar players após renderização
-    function recreatePlayers() {
-        playersInitialized = false;
-        youtubePlayers = {};
-        if (isApiReady) {
-            setTimeout(initializePlayers, 200);
+            if (event.data === YT.PlayerState.ENDED) {
+                if (currentCard) currentCard.classList.remove('playing-now');
+                playNextInPlaylist();
+            }
         }
-    }
 
-    function onPlayerStateChange(event, musicId) {
-        const currentCard = document.getElementById(`card-${musicId}`);
-        if (event.data === YT.PlayerState.PLAYING) {
-            document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
-            if (currentCard) currentCard.classList.add('playing-now');
-            
-            let playlistIdx = userPlaylist.findIndex(id => id === musicId);
-            if(playlistIdx !== -1) {
-                activePlaylistIndex = playlistIdx;
+        function addToPlaylist(musicId) {
+            if (!userPlaylist.includes(musicId)) {
+                userPlaylist.push(musicId);
                 updatePlaylistUI();
             }
         }
-        if (event.data === YT.PlayerState.ENDED) {
-            if (currentCard) currentCard.classList.remove('playing-now');
-            playNextInPlaylist();
-        }
-    }
 
-    // Função melhorada de renderização
-    function renderCatalog() {
-        if (typeof musicDatabase === 'undefined') {
-            console.error('musicDatabase não encontrado');
-            return;
+        function removeFromPlaylist(index) {
+            userPlaylist.splice(index, 1);
+            if (activePlaylistIndex === index) activePlaylistIndex = -1;
+            else if (activePlaylistIndex > index) activePlaylistIndex--;
+            updatePlaylistUI();
         }
 
-        const query = searchGeneral.value.toLowerCase();
-        const selectedComposer = filterComposer.value;
-        const selectedBook = filterBook.value;
-        const mode = getViewMode();
-
-        let filtered = musicDatabase.filter(music => {
-            const matchGeneral = music.title.toLowerCase().includes(query) || 
-                                music.composer.toLowerCase().includes(query) || 
-                                music.book.toLowerCase().includes(query);
-            const matchComposer = selectedComposer === "" || music.composer === selectedComposer;
-            const matchBook = selectedBook === "" || music.book === selectedBook;
-            return matchGeneral && matchComposer && matchBook;
-        });
-
-        if (mode === 'single' && filtered.length > 0) filtered = [filtered[0]];
-        catalogGrid.innerHTML = "";
-
-        if (filtered.length === 0) { 
-            catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`; 
-            return; 
+        function clearPlaylist() {
+            userPlaylist = [];
+            activePlaylistIndex = -1;
+            updatePlaylistUI();
         }
 
-        filtered.forEach(music => {
-            const youtubeId = localGetYouTubeId(music.youtubeUrl);
-            const card = document.createElement('div');
-            card.className = 'music-card';
-            card.id = `card-${music.id}`;
-            
-            let videoHTML = '';
-            if (youtubeId) {
-                videoHTML = `
-                    <div class="video-container">
-                        <div id="player-${music.id}" class="youtube-player-target" 
-                             data-video-id="${youtubeId}" 
-                             data-music-id="${music.id}"></div>
-                    </div>`;
-            } else {
-                videoHTML = `<div style="padding:20px;background:#eee;text-align:center;border-radius:4px;">
-                                <span style="color:#999;">Vídeo indisponível</span>
-                             </div>`;
+        function updatePlaylistUI() {
+            playlistItemsContainer.innerHTML = "";
+            if (userPlaylist.length === 0) {
+                playlistItemsContainer.innerHTML = `<div style="color: #bdc3c7; font-size: 0.8rem; text-align: center; padding: 10px;">A fila está vazia.</div>`;
+                return;
             }
-
-            card.innerHTML = `
-                <div class="music-info">
-                    <h3>${music.title}</h3>
-                    <div class="music-meta">
-                        <p><strong>Compositor:</strong> ${music.composer}</p>
-                        <p><strong>Livro:</strong> ${music.book}</p>
+            userPlaylist.forEach((id, index) => {
+                const song = musicDatabase.find(m => m.id === id);
+                if (!song) return;
+                const item = document.createElement('div');
+                item.className = `playlist-item ${index === activePlaylistIndex ? 'active' : ''}`;
+                item.innerHTML = `
+                    <div class="item-text" onclick="playPlaylistItem(${index})" title="${song.title}">
+                        <strong>${index + 1}.</strong> ${song.title}
                     </div>
-                </div>
-                ${videoHTML}
-                <div class="actions">
-                    <button class="btn-view-pdf" onclick="openPdfPreview('${music.title.replace(/'/g, "\\'")}', '${music.pdfUrl}')">📄 Ver Partitura</button>
-                    <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Playlist</button>
-                </div>
-            `;
-            catalogGrid.appendChild(card);
-        });
-
-        // Recriar os players
-        recreatePlayers();
-    }
-
-    // Funções auxiliares
-    function getViewMode() {
-        let mode = 'all';
-        viewModeRadios.forEach(radio => { if (radio.checked) mode = radio.value; });
-        return mode;
-    }
-
-    function openPdfPreview(title, url) {
-        pdfPreviewTitle.textContent = `Partitura: ${title}`;
-        pdfIframe.src = url;
-        pdfPreviewPanel.style.display = 'flex';
-        resizerRight.style.display = 'flex';
-    }
-
-    function closePdfPreview() {
-        pdfPreviewPanel.style.display = 'none';
-        resizerRight.style.display = 'none';
-        pdfIframe.src = "";
-    }
-
-    // Funções da playlist (mantidas iguais)
-    function addToPlaylist(musicId) {
-        if (!userPlaylist.includes(musicId)) {
-            userPlaylist.push(musicId);
-            updatePlaylistUI();
+                    <span class="remove-item" onclick="removeFromPlaylist(${index})">&times;</span>
+                `;
+                playlistItemsContainer.appendChild(item);
+            });
         }
-    }
 
-    function removeFromPlaylist(index) {
-        userPlaylist.splice(index, 1);
-        if (activePlaylistIndex === index) activePlaylistIndex = -1;
-        else if (activePlaylistIndex > index) activePlaylistIndex--;
-        updatePlaylistUI();
-    }
+        function playPlaylistItem(index) {
+            if (index >= 0 && index < userPlaylist.length) {
+                activePlaylistIndex = index;
+                const musicId = userPlaylist[index];
+                updatePlaylistUI();
+                const card = document.getElementById(`card-${musicId}`);
+                if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    function clearPlaylist() {
-        userPlaylist = [];
-        activePlaylistIndex = -1;
-        updatePlaylistUI();
-    }
-
-    function updatePlaylistUI() {
-        playlistItemsContainer.innerHTML = "";
-        if (userPlaylist.length === 0) {
-            playlistItemsContainer.innerHTML = `<div style="color: #bdc3c7; font-size: 0.8rem; text-align: center; padding: 10px;">A fila está vazia.</div>`;
-            return;
-        }
-        userPlaylist.forEach((id, index) => {
-            const song = musicDatabase.find(m => m.id === id);
-            if (!song) return;
-            const item = document.createElement('div');
-            item.className = `playlist-item ${index === activePlaylistIndex ? 'active' : ''}`;
-            item.innerHTML = `
-                <div class="item-text" onclick="playPlaylistItem(${index})" title="${song.title}">
-                    <strong>${index + 1}.</strong> ${song.title}
-                </div>
-                <span class="remove-item" onclick="removeFromPlaylist(${index})">&times;</span>
-            `;
-            playlistItemsContainer.appendChild(item);
-        });
-    }
-
-    function playPlaylistItem(index) {
-        if (index >= 0 && index < userPlaylist.length) {
-            activePlaylistIndex = index;
-            const musicId = userPlaylist[index];
-            updatePlaylistUI();
-            const card = document.getElementById(`card-${musicId}`);
-            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
-                youtubePlayers[musicId].playVideo();
+                if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
+                    youtubePlayers[musicId].playVideo();
+                }
             }
         }
-    }
 
-    function playNextInPlaylist() {
-        if (activePlaylistIndex + 1 < userPlaylist.length) {
-            playPlaylistItem(activePlaylistIndex + 1);
+        function playNextInPlaylist() {
+            if (activePlaylistIndex + 1 < userPlaylist.length) {
+                playPlaylistItem(activePlaylistIndex + 1);
+            }
         }
-    }
 
-    function savePlaylistToStorage() {
-        localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
-        alert("Fila de reprodução salva localmente!");
-    }
-
-    function loadPlaylistFromStorage() {
-        const stored = localStorage.getItem('nbm_playlist');
-        if (stored) {
-            userPlaylist = JSON.parse(stored);
-            updatePlaylistUI();
+        function savePlaylistToStorage() {
+            localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
+            alert("Fila de reprodução salva localmente!");
         }
-    }
 
-    function exportPlaylistJSON() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userPlaylist));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "playlist_nbm.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
+        function loadPlaylistFromStorage() {
+            const stored = localStorage.getItem('nbm_playlist');
+            if (stored) {
+                userPlaylist = JSON.parse(stored);
+                updatePlaylistUI();
+            }
+        }
 
-    function importPlaylistJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const parsed = JSON.parse(e.target.result);
-                if (Array.isArray(parsed)) {
-                    userPlaylist = parsed.map(Number).filter(id => !isNaN(id));
-                    activePlaylistIndex = -1;
-                    updatePlaylistUI();
-                    alert("Playlist importada!");
-                }
-            } catch (err) { alert("Erro ao ler JSON."); }
-        };
-        reader.readAsText(file);
-    }
+        function exportPlaylistJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userPlaylist));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "playlist_nbm.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
 
-    function initFilters() {
-        if (typeof musicDatabase === 'undefined') return;
-        const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
-        const books = [...new Set(musicDatabase.map(m => m.book))].sort();
-        filterComposer.innerHTML = '<option value="">Compositores</option>';
-        filterBook.innerHTML = '<option value="">Referência</option>';
-        composers.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; filterComposer.appendChild(opt); });
-        books.forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; filterBook.appendChild(opt); });
-    }
-
-    function setupResizer(resizer, targetElement, side) {
-        let startX, startWidth;
-        resizer.addEventListener('mousedown', (e) => {
-            startX = e.clientX;
-            startWidth = parseInt(document.defaultView.getComputedStyle(targetElement).width, 10);
-            resizer.classList.add('dragging');
-            pdfIframe.style.pointerEvents = 'none';
-            const doDrag = (ev) => {
-                if (side === 'left') targetElement.style.width = (startWidth + ev.clientX - startX) + 'px';
-                else if (side === 'right') targetElement.style.width = (startWidth - (ev.clientX - startX)) + 'px';
+        function importPlaylistJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed)) {
+                        userPlaylist = parsed.map(Number).filter(id => !isNaN(id));
+                        activePlaylistIndex = -1;
+                        updatePlaylistUI();
+                        alert("Playlist importada!");
+                    }
+                } catch (err) { alert("Erro ao ler JSON."); }
             };
-            const stopDrag = () => {
-                resizer.classList.remove('dragging');
-                pdfIframe.style.pointerEvents = 'auto';
-                document.documentElement.removeEventListener('mousemove', doDrag);
-                document.documentElement.removeEventListener('mouseup', stopDrag);
-            };
-            document.documentElement.addEventListener('mousemove', doDrag);
-            document.documentElement.addEventListener('mouseup', stopDrag);
+            reader.readAsText(file);
+        }
+
+        function renderCatalog() {
+            if (typeof musicDatabase === 'undefined') return;
+
+            const query = searchGeneral.value.toLowerCase();
+            const selectedComposer = filterComposer.value;
+            const selectedBook = filterBook.value;
+            const mode = getViewMode();
+
+            let filtered = musicDatabase.filter(music => {
+                const matchGeneral = music.title.toLowerCase().includes(query) || music.composer.toLowerCase().includes(query) || music.book.toLowerCase().includes(query);
+                const matchComposer = selectedComposer === "" || music.composer === selectedComposer;
+                const matchBook = selectedBook === "" || music.book === selectedBook;
+                return matchGeneral && matchComposer && matchBook;
+            });
+
+            if (mode === 'single' && filtered.length > 0) filtered = [filtered[0]];
+            catalogGrid.innerHTML = "";
+
+            if (filtered.length === 0) { 
+                catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`; 
+                return; 
+            }
+
+            filtered.forEach(music => {
+                const youtubeId = localGetYouTubeId(music.youtubeUrl);
+
+                const card = document.createElement('div');
+                card.className = 'music-card';
+                card.id = `card-${music.id}`;
+                
+                card.innerHTML = `
+                    <div class="music-info">
+                        <h3>${music.title}</h3>
+                        <div class="music-meta">
+                            <p><strong>Compositor:</strong> ${music.composer}</p>
+                            <p><strong>Livro:</strong> ${music.book}</p>
+                        </div>
+                    </div>
+                    ${youtubeId ? `
+                    <div class="video-container">
+                        <div id="player-${music.id}" class="youtube-player-target" data-video-id="${youtubeId}" data-music-id="${music.id}"></div>
+                    </div>` : ''}
+                    <div class="actions">
+                        <button class="btn-view-pdf" onclick="openPdfPreview('${music.title.replace(/'/g, "\\'")}', '${music.pdfUrl}')">📄 Ver Partitura</button>
+                        <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Playlist</button>
+                    </div>
+                `;
+                catalogGrid.appendChild(card);
+            });
+
+            // Recria ou reinicializa os players caso a API global do YT já esteja disponível
+            if (isApiReady || (typeof YT !== 'undefined' && YT.Player)) {
+                createYouTubePlayers();
+            }
+        }
+
+        function setupResizer(resizer, targetElement, side) {
+            let startX, startWidth;
+            resizer.addEventListener('mousedown', (e) => {
+                startX = e.clientX;
+                startWidth = parseInt(document.defaultView.getComputedStyle(targetElement).width, 10);
+                resizer.classList.add('dragging');
+                pdfIframe.style.pointerEvents = 'none'; 
+                const doDrag = (ev) => {
+                    if (side === 'left') targetElement.style.width = (startWidth + ev.clientX - startX) + 'px';
+                    else if (side === 'right') targetElement.style.width = (startWidth - (ev.clientX - startX)) + 'px';
+                };
+                const stopDrag = () => {
+                    resizer.classList.remove('dragging');
+                    pdfIframe.style.pointerEvents = 'auto'; 
+                    document.documentElement.removeEventListener('mousemove', doDrag);
+                    document.documentElement.removeEventListener('mouseup', stopDrag);
+                };
+                document.documentElement.addEventListener('mousemove', doDrag);
+                document.documentElement.addEventListener('mouseup', stopDrag);
+            });
+        }
+
+        setupResizer(resizerLeft, sidebar, 'left');
+        setupResizer(resizerRight, pdfPreviewPanel, 'right');
+
+        searchGeneral.addEventListener('input', renderCatalog);
+        filterComposer.addEventListener('change', renderCatalog);
+        filterBook.addEventListener('change', renderCatalog);
+        viewModeRadios.forEach(radio => radio.addEventListener('change', renderCatalog));
+        btnClosePreview.addEventListener('click', closePdfPreview);
+        btnClear.addEventListener('click', () => {
+            searchGeneral.value = ""; filterComposer.value = ""; filterBook.value = ""; viewModeRadios[0].checked = true;
+            closePdfPreview(); renderCatalog();
         });
-    }
 
-    // Event listeners
-    btnToggleSidebar.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        resizerLeft.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'flex';
-    });
-
-    searchGeneral.addEventListener('input', renderCatalog);
-    filterComposer.addEventListener('change', renderCatalog);
-    filterBook.addEventListener('change', renderCatalog);
-    viewModeRadios.forEach(radio => radio.addEventListener('change', renderCatalog));
-    btnClosePreview.addEventListener('click', closePdfPreview);
-    btnClear.addEventListener('click', () => {
-        searchGeneral.value = ""; 
-        filterComposer.value = ""; 
-        filterBook.value = ""; 
-        viewModeRadios[0].checked = true;
-        closePdfPreview(); 
-        renderCatalog();
-    });
-
-    setupResizer(resizerLeft, sidebar, 'left');
-    setupResizer(resizerRight, pdfPreviewPanel, 'right');
-
-    // Inicialização
-    window.addEventListener('DOMContentLoaded', () => {
-        initFilters();
-        loadYouTubeAPI();
-        loadPlaylistFromStorage();
-        
-        // Se a API já estiver disponível
-        if (typeof YT !== 'undefined' && YT.Player) {
-            isApiReady = true;
-            initializePlayers();
-        }
-    });
-
-    // Fallback: forçar recriação após 3 segundos
-    setTimeout(() => {
-        if (!playersInitialized) {
-            recreatePlayers();
-        }
-    }, 3000);
-</script>
+        // Evento crítico reconfigurado: Renderiza a lista estrutural PRIMEIRO
+        window.addEventListener('DOMContentLoaded', () => {
+            initFilters();
+            renderCatalog();
+            loadPlaylistFromStorage();
+            
+            // Caso a API carregue antes deste evento disparar
+            if (typeof YT !== 'undefined' && YT.Player) {
+                isApiReady = true;
+                createYouTubePlayers();
+            }
+        });
+    </script>
 </body>
 </html>

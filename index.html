@@ -47,7 +47,7 @@
             background-color: var(--accent-color);
         }
 
-        /* Coluna Esquerda - Filtros, Busca e Playlist Integrada */
+        /* Coluna Esquerda - Filtros, Busca e Playlist Vertical */
         aside {
             width: 320px; 
             min-width: 280px;
@@ -70,7 +70,15 @@
             visibility: hidden;
         }
 
-        aside h2, aside h3 {
+        aside h1 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        aside h2 {
             font-size: 1.3rem;
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 5px;
@@ -81,6 +89,8 @@
             color: var(--accent-color);
             font-size: 1.1rem;
             margin-top: 15px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
         }
 
         .form-group {
@@ -143,6 +153,7 @@
             flex-direction: column;
             gap: 10px;
             flex: 1;
+            min-height: 200px;
         }
 
         .playlist-actions-grid {
@@ -171,12 +182,14 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 6px;
             padding: 8px;
-            max-height: 250px;
+            flex: 1;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 6px;
             border: 1px solid #34495e;
+            min-height: 150px;
+            max-height: 300px;
         }
 
         .playlist-item {
@@ -212,7 +225,7 @@
             padding: 0 4px;
         }
 
-        /* Barras de Redimensionamento (Resizers) */
+        /* Barras de Redimensionamento */
         .resizer {
             width: 8px;
             background-color: #bdc3c7;
@@ -375,7 +388,7 @@
     <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
 
     <aside id="sidebar">
-        <h1><img src="imagem/logo1.png" alt="NBM" style="height: 60px; width: auto;"></h1>
+        <h1>NBM</h1>
         <h2>Filtros e Busca</h2>
          
         <div class="form-group">
@@ -403,7 +416,7 @@
 
         <button class="btn-clear" id="btnClear">Limpar Filtros</button>
 
-        <h3>Fila de Reprodução</h3>
+        <h3>🎵 Fila de Reprodução</h3>
         <div class="playlist-vertical-container">
             <div class="playlist-actions-grid">
                 <button onclick="savePlaylistToStorage()">💾 Salvar</button>
@@ -440,8 +453,8 @@
 
     <script src="dados.js"></script>
     <script>
-        // Função interna de extração de ID do YouTube
-        function localGetYouTubeId(url) {
+        // Função para extrair ID do YouTube
+        function getYouTubeId(url) {
             if (!url) return null;
             url = url.trim();
             if (url.length === 11) return url;
@@ -511,27 +524,22 @@
             pdfIframe.src = "";
         }
 
-        // Esta função roda assim que o script externo do YouTube termina de carregar
         function onYouTubeIframeAPIReady() {
             isApiReady = true;
-            createYouTubePlayers();
+            if (typeof musicDatabase !== 'undefined') {
+                renderCatalog();
+                loadPlaylistFromStorage();
+            }
         }
 
         function createYouTubePlayers() {
-            // Destrói instâncias antigas para não vazar memória
-            for (let id in youtubePlayers) {
-                if (youtubePlayers[id] && typeof youtubePlayers[id].destroy === 'function') {
-                    youtubePlayers[id].destroy();
-                }
-            }
             youtubePlayers = {};
-            
             const targets = document.querySelectorAll('.youtube-player-target');
             targets.forEach(target => {
                 const videoId = target.getAttribute('data-video-id');
                 const musicId = parseInt(target.getAttribute('data-music-id'), 10);
                 
-                if (typeof YT !== 'undefined' && YT.Player && videoId) {
+                if (typeof YT !== 'undefined' && YT.Player) {
                     youtubePlayers[musicId] = new YT.Player(target.id, {
                         height: '100%',
                         width: '100%',
@@ -562,6 +570,7 @@
             }
         }
 
+        // Funções da Playlist
         function addToPlaylist(musicId) {
             if (!userPlaylist.includes(musicId)) {
                 userPlaylist.push(musicId);
@@ -664,6 +673,7 @@
             reader.readAsText(file);
         }
 
+        // Renderização do Catálogo
         function renderCatalog() {
             if (typeof musicDatabase === 'undefined') return;
 
@@ -688,7 +698,7 @@
             }
 
             filtered.forEach(music => {
-                const youtubeId = localGetYouTubeId(music.youtubeUrl);
+                const youtubeId = getYouTubeId(music.youtubeUrl);
 
                 const card = document.createElement('div');
                 card.className = 'music-card';
@@ -714,12 +724,12 @@
                 catalogGrid.appendChild(card);
             });
 
-            // Recria ou reinicializa os players caso a API global do YT já esteja disponível
-            if (isApiReady || (typeof YT !== 'undefined' && YT.Player)) {
-                createYouTubePlayers();
+            if (isApiReady) {
+                setTimeout(createYouTubePlayers, 150);
             }
         }
 
+        // Configurar Redimensionadores
         function setupResizer(resizer, targetElement, side) {
             let startX, startWidth;
             resizer.addEventListener('mousedown', (e) => {
@@ -745,6 +755,7 @@
         setupResizer(resizerLeft, sidebar, 'left');
         setupResizer(resizerRight, pdfPreviewPanel, 'right');
 
+        // Event Listeners
         searchGeneral.addEventListener('input', renderCatalog);
         filterComposer.addEventListener('change', renderCatalog);
         filterBook.addEventListener('change', renderCatalog);
@@ -755,16 +766,12 @@
             closePdfPreview(); renderCatalog();
         });
 
-        // Evento crítico reconfigurado: Renderiza a lista estrutural PRIMEIRO
         window.addEventListener('DOMContentLoaded', () => {
             initFilters();
-            renderCatalog();
-            loadPlaylistFromStorage();
-            
-            // Caso a API carregue antes deste evento disparar
-            if (typeof YT !== 'undefined' && YT.Player) {
+            if (isApiReady || (typeof YT !== 'undefined' && YT.Player)) {
                 isApiReady = true;
-                createYouTubePlayers();
+                renderCatalog();
+                loadPlaylistFromStorage();
             }
         });
     </script>

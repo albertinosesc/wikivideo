@@ -1,4 +1,4 @@
-não funcionou, esse aqui esta funconando, mas o problema dele é que os comando estão na linha horizontal, e quero na barte vertical junto com os filtro <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -20,18 +20,10 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
 
         body {
             display: flex;
-            flex-direction: column;
             background-color: var(--bg-color);
             height: 100vh;
             overflow: hidden;
             user-select: none;
-        }
-
-        .app-container {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 160px); /* Deixa espaço para a barra da playlist embaixo */
-            overflow: hidden;
             position: relative;
         }
 
@@ -55,14 +47,14 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             background-color: var(--accent-color);
         }
 
-        /* Coluna Esquerda - Filtros e Busca */
+        /* Coluna Esquerda - Filtros, Busca e Playlist Vertical */
         aside {
-            width: 300px; 
-            min-width: 240px;
+            width: 320px; 
+            min-width: 280px;
             max-width: 500px;
             background-color: var(--primary-color);
             color: white;
-            padding: 80px 20px 20px 20px;
+            padding: 80px 15px 20px 15px;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -74,13 +66,29 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
         }
 
         aside.collapsed {
-            margin-left: -300px;
+            margin-left: -320px;
             visibility: hidden;
         }
 
-        aside h2 {
-            font-size: 1.5rem;
+        aside h1 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
             margin-bottom: 10px;
+        }
+
+        aside h2 {
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+            margin-top: 5px;
+        }
+
+        aside h3 {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            margin-top: 15px;
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 5px;
         }
@@ -92,15 +100,15 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
         }
 
         .form-group label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #ecf0f1;
         }
 
         input[type="text"], select {
-            padding: 10px;
+            padding: 8px 10px;
             border: none;
             border-radius: 4px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             width: 100%;
             user-select: text;
         }
@@ -120,25 +128,114 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             align-items: center;
             gap: 5px;
             cursor: pointer;
+            font-size: 0.9rem;
         }
 
         .btn-clear {
             background-color: #e74c3c;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
-            margin-top: auto;
+            font-size: 0.9rem;
         }
 
         .btn-clear:hover {
             background-color: #c0392b;
         }
 
-        /* Barras de Redimensionamento (Resizers) */
+        /* Seção Vertical da Playlist */
+        .playlist-vertical-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+            min-height: 200px;
+        }
+
+        .playlist-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .playlist-actions-grid button, .btn-import-label {
+            background-color: #34495e;
+            color: white;
+            border: 1px solid #7f8c8d;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+        }
+        .playlist-actions-grid button:hover, .btn-import-label:hover { 
+            background-color: var(--accent-color); 
+        }
+
+        .playlist-list {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 8px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border: 1px solid #34495e;
+            min-height: 150px;
+            max-height: 300px;
+        }
+
+        .playlist-item {
+            background-color: #34495e;
+            border: 1px solid #7f8c8d;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .playlist-item:hover {
+            background-color: #3d566e;
+        }
+
+        .playlist-item.active {
+            border-color: #e67e22;
+            background-color: #d35400;
+        }
+
+        .playlist-item .item-text {
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .playlist-item .remove-item {
+            color: #e74c3c;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 0 4px;
+        }
+
+        .playlist-item .remove-item:hover {
+            color: #ff6b6b;
+        }
+
+        /* Barras de Redimensionamento */
         .resizer {
             width: 8px;
             background-color: #bdc3c7;
@@ -155,25 +252,21 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             background-color: var(--accent-color);
         }
 
-        /* Área Central - Catálogo de Músicas */
+        /* Área Central - Catálogo */
         main {
             flex: 1;
-            padding: 30px 30px 30px 90px;
+            padding: 30px 30px 30px 100px;
             overflow-y: auto;
-            height: 100%;
+            height: 100vh;
             user-select: text;
-        }
-
-        .header-main {
-            margin-bottom: 25px;
         }
 
         .header-main h1 {
             color: var(--primary-color);
             font-size: 1.8rem;
+            margin-bottom: 25px;
         }
 
-        /* Grid de Músicas */
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -209,7 +302,6 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             line-height: 1.4;
         }
 
-        /* Mídia Embutida */
         .video-container {
             position: relative;
             padding-bottom: 56.25%;
@@ -219,7 +311,7 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             background: #000;
         }
 
-        .video-container iframe {
+        .video-container div.youtube-player-target {
             position: absolute;
             top: 0;
             left: 0;
@@ -250,19 +342,13 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             transition: background 0.2s;
         }
 
-        .btn-view-pdf {
-            background-color: var(--accent-color);
-            color: white;
-        }
+        .btn-view-pdf { background-color: var(--accent-color); color: white; }
         .btn-view-pdf:hover { background-color: #149a80; }
 
-        .btn-add-playlist {
-            background-color: #34495e;
-            color: white;
-        }
+        .btn-add-playlist { background-color: #34495e; color: white; }
         .btn-add-playlist:hover { background-color: #212f3d; }
 
-        /* Painel da Direita - Visualizador do PDF ativo */
+        /* Visualizador de PDF Lateral */
         .pdf-preview-panel {
             width: 40%; 
             min-width: 300px;
@@ -270,7 +356,7 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             background-color: #2c3e50;
             display: none; 
             flex-direction: column;
-            height: 100%;
+            height: 100vh;
             z-index: 5;
             flex-shrink: 0;
         }
@@ -292,163 +378,118 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             cursor: pointer;
         }
 
+        .btn-close-preview:hover {
+            color: white;
+        }
+
         .pdf-frame { width: 100%; height: 100%; border: none; }
-
-        /* Painel Inferior - Playlist Avançada */
-        footer.playlist-panel {
-            height: 160px;
-            background-color: #2c3e50;
-            color: white;
-            border-top: 4px solid #34495e;
-            display: flex;
-            flex-direction: column;
-            padding: 12px 20px;
-            z-index: 30;
-        }
-
-        .playlist-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #34495e;
-            padding-bottom: 5px;
-        }
-
-        .playlist-header h4 { font-size: 1rem; color: #18bc9c; }
-
-        .playlist-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .playlist-controls button, .btn-import-label {
-            background-color: #34495e;
-            color: white;
-            border: 1px solid #7f8c8d;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .playlist-controls button:hover, .btn-import-label:hover { background-color: var(--accent-color); }
-
-        .playlist-items-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            flex: 1;
-            padding-bottom: 5px;
-            align-items: center;
-        }
-
-        .playlist-item {
-            background-color: #34495e;
-            border: 1px solid #7f8c8d;
-            border-radius: 4px;
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .playlist-item.active {
-            border-color: #e67e22;
-            background-color: #d35400;
-        }
-
-        .playlist-item .remove-item {
-            color: #e74c3c;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
         .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d; }
-        
         #fileImport { display: none; }
+
+        @media (max-width: 1024px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            aside { width: 100% !important; max-width: none; height: auto; padding-top: 80px; }
+            aside.collapsed { margin-left: 0; display: none; }
+            .resizer { display: none; }
+            main { height: auto; padding-left: 20px; }
+            .pdf-preview-panel { width: 100% !important; max-width: none; height: 600px; }
+            .catalog-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
+    <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
 
-        <aside id="sidebar">
-            <h2>Filtros e Busca</h2>
-             
-            <div class="form-group">
-                <label for="searchGeneral">Pesquisa Geral:</label>
-                <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
-            </div>
+    <aside id="sidebar">
+        <h1>NBM</h1>
+        <h2>Filtros e Busca</h2>
+         
+        <div class="form-group">
+            <label for="searchGeneral">Pesquisa Geral:</label>
+            <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
+        </div>
 
-            <div class="form-group">
-                <label for="filterComposer">Compositor:</label>
-                <select id="filterComposer"><option value="">Compositores</option></select>
-            </div>
+        <div class="form-group">
+            <label for="filterComposer">Compositor:</label>
+            <select id="filterComposer"><option value="">Compositores</option></select>
+        </div>
 
-            <div class="form-group">
-                <label for="filterBook">Referência:</label>
-                <select id="filterBook"><option value="">Referência</option></select>
-            </div>
+        <div class="form-group">
+            <label for="filterBook">Referência:</label>
+            <select id="filterBook"><option value="">Referência</option></select>
+        </div>
 
-            <div class="form-group">
-                <label>Visualização:</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="viewMode" value="all" checked> Todos</label>
-                    <label><input type="radio" name="viewMode" value="single"> Individual</label>
-                </div>
-<button onclick="savePlaylistToStorage()">💾 Salvar Local</button>
-<div class="playlist-header">
-            <h4>Fila de Reprodução Autônoma</h4>
-            <div class="playlist-controls">
-                
-                <button onclick="exportPlaylistJSON()">📤 Exportar JSON</button>
-                <label for="fileImport" class="btn-import-label">📥 Importar JSON</label>
-                <input type="file" id="fileImport" accept=".json" onchange="importPlaylistJSON(event)">
-                <button onclick="clearPlaylist()" style="background-color: #e74c3c;">❌ Limpar Fila</button>
+        <div class="form-group">
+            <label>Visualização:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="viewMode" value="all" checked> Todos</label>
+                <label><input type="radio" name="viewMode" value="single"> Individual</label>
             </div>
         </div>
-        <div class="playlist-items-container" id="playlistItemsContainer">
 
+        <button class="btn-clear" id="btnClear">Limpar Filtros</button>
+
+        <h3>🎵 Fila de Reprodução</h3>
+        <div class="playlist-vertical-container">
+            <div class="playlist-actions-grid">
+                <button onclick="savePlaylistToStorage()">💾 Salvar</button>
+                <button onclick="exportPlaylistJSON()">📤 Exportar</button>
+                <label for="fileImport" class="btn-import-label">📥 Importar</label>
+                <input type="file" id="fileImport" accept=".json" onchange="importPlaylistJSON(event)">
+                <button onclick="clearPlaylist()" style="background-color: #e74c3c; grid-column: span 2;">❌ Limpar Fila</button>
             </div>
-
-            <button class="btn-clear" id="btnClear">Limpar Filtros</button>
-
-        </aside>
-
-        <div class="resizer" id="resizerLeft"></div>
-
-        <main>
-            <div class="header-main">
-                <h1>NBM - Vídeos e Partituras</h1>
+            
+            <div class="playlist-list" id="playlistItemsContainer">
+                <div style="color: #bdc3c7; font-size: 0.8rem; text-align: center; padding: 10px;">A fila está vazia.</div>
             </div>
-            <div class="catalog-grid" id="catalogGrid"></div>
-        </main>
+        </div>
+    </aside>
 
-        <div class="resizer" id="resizerRight" style="display: none;"></div>
+    <div class="resizer" id="resizerLeft"></div>
 
-        <section class="pdf-preview-panel" id="pdfPreviewPanel">
-            <div class="pdf-preview-header">
-                <h3 id="pdfPreviewTitle">Partitura</h3>
-                <button class="btn-close-preview" id="btnClosePreview">&times;</button>
-            </div>
-            <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
-        </section>
-    </div>
+    <main>
+        <div class="header-main">
+            <h1>NBM - Vídeos e Partituras</h1>
+        </div>
+        <div class="catalog-grid" id="catalogGrid"></div>
+    </main>
 
-  
+    <div class="resizer" id="resizerRight" style="display: none;"></div>
+
+    <section class="pdf-preview-panel" id="pdfPreviewPanel">
+        <div class="pdf-preview-header">
+            <h3 id="pdfPreviewTitle">Partitura</h3>
+            <button class="btn-close-preview" id="btnClosePreview">&times;</button>
+        </div>
+        <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
+    </section>
 
     <script src="dados.js"></script>
     <script>
-        // Carregamento Assíncrono Seguro do Iframe do YouTube
+        // ============================================
+        // FUNÇÃO PARA EXTRAIR ID DO YOUTUBE
+        // ============================================
+        function getYouTubeId(url) {
+            if (!url) return null;
+            url = url.trim();
+            if (url.length === 11) return url;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // ============================================
+        // CARREGAMENTO DA API DO YOUTUBE
+        // ============================================
         let tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         let firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
         const searchGeneral = document.getElementById('searchGeneral');
         const filterComposer = document.getElementById('filterComposer');
         const filterBook = document.getElementById('filterBook');
@@ -468,13 +509,22 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
         let youtubePlayers = {};
         let userPlaylist = []; 
         let activePlaylistIndex = -1;
+        let isApiReady = false;
+        let creationAttempts = 0;
 
+        // ============================================
+        // FUNÇÃO: ALTERNAR SIDEBAR
+        // ============================================
         btnToggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
             resizerLeft.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'flex';
         });
 
+        // ============================================
+        // FUNÇÃO: INICIAR FILTROS
+        // ============================================
         function initFilters() {
+            if (typeof musicDatabase === 'undefined') return;
             const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
             const books = [...new Set(musicDatabase.map(m => m.book))].sort();
             filterComposer.innerHTML = '<option value="">Compositores</option>';
@@ -483,12 +533,18 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             books.forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; filterBook.appendChild(opt); });
         }
 
+        // ============================================
+        // FUNÇÃO: OBTER MODO DE VISUALIZAÇÃO
+        // ============================================
         function getViewMode() {
             let mode = 'all';
             viewModeRadios.forEach(radio => { if (radio.checked) mode = radio.value; });
             return mode;
         }
 
+        // ============================================
+        // FUNÇÃO: ABRIR PDF
+        // ============================================
         function openPdfPreview(title, url) {
             pdfPreviewTitle.textContent = `Partitura: ${title}`;
             pdfIframe.src = url;
@@ -496,65 +552,141 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             resizerRight.style.display = 'flex'; 
         }
 
+        // ============================================
+        // FUNÇÃO: FECHAR PDF
+        // ============================================
         function closePdfPreview() {
             pdfPreviewPanel.style.display = 'none';
             resizerRight.style.display = 'none'; 
             pdfIframe.src = "";
         }
 
-        // Chamada pela API do YouTube de forma automatizada externa
+        // ============================================
+        // FUNÇÃO: CALLBACK DA API DO YOUTUBE
+        // ============================================
         function onYouTubeIframeAPIReady() {
-            renderCatalog();
-            loadPlaylistFromStorage();
+            console.log("API do YouTube carregada!");
+            isApiReady = true;
+            if (typeof musicDatabase !== 'undefined') {
+                renderCatalog();
+                loadPlaylistFromStorage();
+            }
         }
 
+        // ============================================
+        // FUNÇÃO: CRIAR PLAYERS DO YOUTUBE (VERSÃO ROBUSTA)
+        // ============================================
         function createYouTubePlayers() {
+            // Limpar players antigos
             youtubePlayers = {};
+            
             const targets = document.querySelectorAll('.youtube-player-target');
-            targets.forEach(target => {
+            if (targets.length === 0) {
+                console.log("Nenhum player para criar");
+                return;
+            }
+
+            // Verificar se a API está disponível
+            if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+                console.log("API do YouTube não está disponível, tentando novamente...");
+                if (creationAttempts < 10) {
+                    creationAttempts++;
+                    setTimeout(createYouTubePlayers, 500);
+                }
+                return;
+            }
+
+            console.log(`Criando ${targets.length} players do YouTube...`);
+            creationAttempts = 0;
+            
+            targets.forEach((target, index) => {
                 const videoId = target.getAttribute('data-video-id');
                 const musicId = parseInt(target.getAttribute('data-music-id'), 10);
                 
-                youtubePlayers[musicId] = new YT.Player(target.id, {
-                    height: '100%',
-                    width: '100%',
-                    videoId: videoId,
-                    events: {
-                        'onStateChange': (event) => onPlayerStateChange(event, musicId)
+                if (!videoId || !musicId) {
+                    console.warn(`Player ${index} sem videoId ou musicId`);
+                    return;
+                }
+
+                try {
+                    // Destruir player antigo se existir
+                    if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].destroy === 'function') {
+                        youtubePlayers[musicId].destroy();
                     }
-                });
+
+                    youtubePlayers[musicId] = new YT.Player(target.id, {
+                        height: '100%',
+                        width: '100%',
+                        videoId: videoId,
+                        playerVars: {
+                            'autoplay': 0,
+                            'controls': 1,
+                            'rel': 0,
+                            'showinfo': 0,
+                            'modestbranding': 1
+                        },
+                        events: {
+                            'onReady': function(event) {
+                                console.log(`Player ${musicId} pronto!`);
+                            },
+                            'onStateChange': function(event) {
+                                onPlayerStateChange(event, musicId);
+                            },
+                            'onError': function(event) {
+                                console.error(`Erro no player ${musicId}:`, event.data);
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error(`Erro ao criar player ${musicId}:`, error);
+                }
             });
         }
 
+        // ============================================
+        // FUNÇÃO: EVENTO DE MUDANÇA DE ESTADO DO PLAYER
+        // ============================================
         function onPlayerStateChange(event, musicId) {
             const currentCard = document.getElementById(`card-${musicId}`);
-            
             if (event.data === YT.PlayerState.PLAYING) {
                 document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
                 if (currentCard) currentCard.classList.add('playing-now');
                 
-                // Alinha o estado visual se o item estiver na playlist
                 let playlistIdx = userPlaylist.findIndex(id => id === musicId);
                 if(playlistIdx !== -1) {
                     activePlaylistIndex = playlistIdx;
                     updatePlaylistUI();
                 }
             }
-
             if (event.data === YT.PlayerState.ENDED) {
                 if (currentCard) currentCard.classList.remove('playing-now');
                 playNextInPlaylist();
             }
         }
 
-        // LÓGICA CORE DA PLAYLIST PERSONALIZADA
+        // ============================================
+        // FUNÇÕES DA PLAYLIST
+        // ============================================
+        
+        // Adicionar à playlist
         function addToPlaylist(musicId) {
             if (!userPlaylist.includes(musicId)) {
                 userPlaylist.push(musicId);
                 updatePlaylistUI();
+                // Feedback visual
+                const btn = document.querySelector(`#card-${musicId} .btn-add-playlist`);
+                if (btn) {
+                    btn.textContent = '✅ Adicionado!';
+                    btn.style.backgroundColor = '#27ae60';
+                    setTimeout(() => {
+                        btn.textContent = '➕ Adicionar à Playlist';
+                        btn.style.backgroundColor = '#34495e';
+                    }, 2000);
+                }
             }
         }
 
+        // Remover da playlist
         function removeFromPlaylist(index) {
             userPlaylist.splice(index, 1);
             if (activePlaylistIndex === index) activePlaylistIndex = -1;
@@ -562,73 +694,112 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             updatePlaylistUI();
         }
 
+        // Limpar playlist
         function clearPlaylist() {
-            userPlaylist = [];
-            activePlaylistIndex = -1;
-            updatePlaylistUI();
+            if (userPlaylist.length === 0) return;
+            if (confirm('Tem certeza que deseja limpar toda a fila?')) {
+                userPlaylist = [];
+                activePlaylistIndex = -1;
+                updatePlaylistUI();
+            }
         }
 
+        // Atualizar UI da playlist
         function updatePlaylistUI() {
             playlistItemsContainer.innerHTML = "";
             if (userPlaylist.length === 0) {
-                playlistItemsContainer.innerHTML = `<div style="color: #bdc3c7; font-size: 0.85rem;">Sua fila está vazia. Adicione músicas nos cards acima para iniciar.</div>`;
+                playlistItemsContainer.innerHTML = `<div style="color: #bdc3c7; font-size: 0.8rem; text-align: center; padding: 10px;">A fila está vazia.</div>`;
                 return;
             }
-
             userPlaylist.forEach((id, index) => {
                 const song = musicDatabase.find(m => m.id === id);
                 if (!song) return;
-
                 const item = document.createElement('div');
                 item.className = `playlist-item ${index === activePlaylistIndex ? 'active' : ''}`;
                 item.innerHTML = `
-                    <span style="cursor:pointer;" onclick="playPlaylistItem(${index})">▶ <strong>${index + 1}.</strong> ${song.title}</span>
-                    <span class="remove-item" onclick="removeFromPlaylist(${index})">&times;</span>
+                    <div class="item-text" onclick="playPlaylistItem(${index})" title="${song.title}">
+                        <strong>${index + 1}.</strong> ${song.title}
+                    </div>
+                    <span class="remove-item" onclick="event.stopPropagation(); removeFromPlaylist(${index})">&times;</span>
                 `;
                 playlistItemsContainer.appendChild(item);
             });
+            
+            // Scroll para o item ativo
+            if (activePlaylistIndex !== -1) {
+                const activeItem = playlistItemsContainer.querySelector('.playlist-item.active');
+                if (activeItem) {
+                    activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
         }
 
+        // Tocar item da playlist
         function playPlaylistItem(index) {
             if (index >= 0 && index < userPlaylist.length) {
                 activePlaylistIndex = index;
                 const musicId = userPlaylist[index];
                 updatePlaylistUI();
-
+                
+                // Scroll para o card
                 const card = document.getElementById(`card-${musicId}`);
                 if (card) {
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
 
+                // Tocar o vídeo
                 if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
                     youtubePlayers[musicId].playVideo();
                 } else {
-                    alert("Para iniciar a reprodução automática por este painel, a música precisa estar visível na tela pelos seus filtros atuais.");
+                    console.warn(`Player ${musicId} não encontrado ou não está pronto`);
+                    // Tentar recriar os players
+                    createYouTubePlayers();
+                    // Tentar tocar novamente após um tempo
+                    setTimeout(() => {
+                        if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
+                            youtubePlayers[musicId].playVideo();
+                        }
+                    }, 500);
                 }
             }
         }
 
+        // Tocar próximo da playlist
         function playNextInPlaylist() {
             if (activePlaylistIndex + 1 < userPlaylist.length) {
                 playPlaylistItem(activePlaylistIndex + 1);
             }
         }
 
-        // IMPORTAÇÃO / EXPORTAÇÃO JSON & STORAGE
+        // ============================================
+        // FUNÇÕES DE PERSISTÊNCIA DA PLAYLIST
+        // ============================================
+        
+        // Salvar no localStorage
         function savePlaylistToStorage() {
             localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
-            alert("Fila de reprodução salva com sucesso neste navegador!");
+            alert("✅ Fila de reprodução salva localmente!");
         }
 
+        // Carregar do localStorage
         function loadPlaylistFromStorage() {
             const stored = localStorage.getItem('nbm_playlist');
             if (stored) {
-                userPlaylist = JSON.parse(stored);
-                updatePlaylistUI();
+                try {
+                    userPlaylist = JSON.parse(stored);
+                    updatePlaylistUI();
+                } catch (e) {
+                    console.error('Erro ao carregar playlist:', e);
+                }
             }
         }
 
+        // Exportar JSON
         function exportPlaylistJSON() {
+            if (userPlaylist.length === 0) {
+                alert('A fila está vazia!');
+                return;
+            }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userPlaylist));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -638,6 +809,7 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             downloadAnchor.remove();
         }
 
+        // Importar JSON
         function importPlaylistJSON(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -649,26 +821,37 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
                         userPlaylist = parsed.map(Number).filter(id => !isNaN(id));
                         activePlaylistIndex = -1;
                         updatePlaylistUI();
-                        alert("Playlist importada com sucesso!");
+                        alert("✅ Playlist importada com sucesso!");
                     } else {
-                        alert("Arquivo JSON inválido.");
+                        alert("❌ Arquivo JSON inválido.");
                     }
-                } catch (err) {
-                    alert("Erro ao ler o arquivo JSON.");
+                } catch (err) { 
+                    alert("❌ Erro ao ler o arquivo JSON."); 
                 }
             };
             reader.readAsText(file);
+            // Resetar o input para permitir importar o mesmo arquivo novamente
+            event.target.value = '';
         }
 
-        // RENDERIZAÇÃO DO CATÁLOGO
+        // ============================================
+        // FUNÇÃO: RENDERIZAR CATÁLOGO (VERSÃO MELHORADA)
+        // ============================================
         function renderCatalog() {
+            if (typeof musicDatabase === 'undefined') {
+                console.error('musicDatabase não está definido!');
+                return;
+            }
+
             const query = searchGeneral.value.toLowerCase();
             const selectedComposer = filterComposer.value;
             const selectedBook = filterBook.value;
             const mode = getViewMode();
 
             let filtered = musicDatabase.filter(music => {
-                const matchGeneral = music.title.toLowerCase().includes(query) || music.composer.toLowerCase().includes(query) || music.book.toLowerCase().includes(query);
+                const matchGeneral = music.title.toLowerCase().includes(query) || 
+                                    music.composer.toLowerCase().includes(query) || 
+                                    music.book.toLowerCase().includes(query);
                 const matchComposer = selectedComposer === "" || music.composer === selectedComposer;
                 const matchBook = selectedBook === "" || music.book === selectedBook;
                 return matchGeneral && matchComposer && matchBook;
@@ -700,7 +883,7 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
                     ${youtubeId ? `
                     <div class="video-container">
                         <div id="player-${music.id}" class="youtube-player-target" data-video-id="${youtubeId}" data-music-id="${music.id}"></div>
-                    </div>` : ''}
+                    </div>` : `<div style="padding:20px;background:#eee;text-align:center;border-radius:4px;color:#999;">Vídeo indisponível</div>`}
                     <div class="actions">
                         <button class="btn-view-pdf" onclick="openPdfPreview('${music.title.replace(/'/g, "\\'")}', '${music.pdfUrl}')">📄 Ver Partitura</button>
                         <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Playlist</button>
@@ -709,10 +892,30 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
                 catalogGrid.appendChild(card);
             });
 
-            setTimeout(createYouTubePlayers, 150);
+            // CRIAR PLAYERS COM VERIFICAÇÃO ROBUSTA
+            if (typeof YT !== 'undefined' && YT.Player) {
+                // API já está pronta
+                setTimeout(createYouTubePlayers, 200);
+            } else {
+                // Aguardar API carregar
+                console.log("Aguardando API do YouTube para criar players...");
+                let attempts = 0;
+                const waitForAPI = setInterval(() => {
+                    attempts++;
+                    if (typeof YT !== 'undefined' && YT.Player) {
+                        clearInterval(waitForAPI);
+                        createYouTubePlayers();
+                    } else if (attempts >= 20) {
+                        clearInterval(waitForAPI);
+                        console.error("API do YouTube não carregou após 10 segundos!");
+                    }
+                }, 500);
+            }
         }
 
-        // Arrastadores Laterais
+        // ============================================
+        // FUNÇÃO: CONFIGURAR REDIMENSIONADORES
+        // ============================================
         function setupResizer(resizer, targetElement, side) {
             let startX, startWidth;
             resizer.addEventListener('mousedown', (e) => {
@@ -735,24 +938,74 @@ não funcionou, esse aqui esta funconando, mas o problema dele é que os comando
             });
         }
 
+        // ============================================
+        // CONFIGURAR REDIMENSIONADORES
+        // ============================================
         setupResizer(resizerLeft, sidebar, 'left');
         setupResizer(resizerRight, pdfPreviewPanel, 'right');
 
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
         searchGeneral.addEventListener('input', renderCatalog);
         filterComposer.addEventListener('change', renderCatalog);
         filterBook.addEventListener('change', renderCatalog);
         viewModeRadios.forEach(radio => radio.addEventListener('change', renderCatalog));
         btnClosePreview.addEventListener('click', closePdfPreview);
         btnClear.addEventListener('click', () => {
-            searchGeneral.value = ""; filterComposer.value = ""; filterBook.value = ""; viewModeRadios[0].checked = true;
-            closePdfPreview(); renderCatalog();
+            searchGeneral.value = ""; 
+            filterComposer.value = ""; 
+            filterBook.value = ""; 
+            viewModeRadios[0].checked = true;
+            closePdfPreview(); 
+            renderCatalog();
         });
 
+        // ============================================
+        // FALLBACK: TENTAR RECRIAR PLAYERS PERIODICAMENTE
+        // ============================================
+        setInterval(() => {
+            const targets = document.querySelectorAll('.youtube-player-target');
+            const playersCount = Object.keys(youtubePlayers).length;
+            if (targets.length > 0 && playersCount === 0 && typeof YT !== 'undefined' && YT.Player) {
+                console.log("Fallback: Recriando players perdidos...");
+                createYouTubePlayers();
+            }
+        }, 5000);
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof musicDatabase !== 'undefined' && typeof getYouTubeId !== 'undefined') {
-                initFilters();
+            console.log("DOM carregado!");
+            initFilters();
+            if (typeof musicDatabase !== 'undefined') {
+                renderCatalog();
+                loadPlaylistFromStorage();
+            }
+            
+            // Se a API já estiver disponível
+            if (typeof YT !== 'undefined' && YT.Player) {
+                isApiReady = true;
+                console.log("API do YouTube já estava disponível!");
+                createYouTubePlayers();
             }
         });
+
+        // ============================================
+        // EXPORTAÇÃO DE FUNÇÕES PARA O ESCOPO GLOBAL
+        // ============================================
+        window.addToPlaylist = addToPlaylist;
+        window.removeFromPlaylist = removeFromPlaylist;
+        window.clearPlaylist = clearPlaylist;
+        window.playPlaylistItem = playPlaylistItem;
+        window.savePlaylistToStorage = savePlaylistToStorage;
+        window.exportPlaylistJSON = exportPlaylistJSON;
+        window.importPlaylistJSON = importPlaylistJSON;
+        window.openPdfPreview = openPdfPreview;
+        window.closePdfPreview = closePdfPreview;
+        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+        window.createYouTubePlayers = createYouTubePlayers;
     </script>
 </body>
 </html>

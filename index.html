@@ -601,11 +601,11 @@
                 <h1>NBM - Vídeos e Partituras</h1>
                 <div class="header-controls">
                     <button class="btn-toggle-view" id="btnToggleView" onclick="toggleViewMode()">
-                        <span id="viewIcon">▦</span> <span id="viewLabel">Grade</span>
+                        <span id="viewIcon">☰</span> <span id="viewLabel">Lista</span>
                     </button>
                 </div>
             </div>
-            <div class="catalog-grid" id="catalogGrid"></div>
+            <div class="catalog-list" id="catalogGrid"></div>
         </main>
 
         <!-- CONTAINER DO PLAYER HORIZONTAL COMPACTO -->
@@ -671,7 +671,7 @@
         let userPlaylist = []; 
         let activePlaylistIndex = -1;
         let currentlyPlayingMusicId = null;
-        let isListView = false;
+        let isListView = true;  // MUDANÇA: Começa com LISTA
 
         btnToggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
@@ -917,9 +917,6 @@
 
                 const isList = isListView;
                 
-                // ============================================
-                // PARTE CORRIGIDA: MÚSICA E COMPOSITOR NA MESMA LINHA
-                // ============================================
                 card.innerHTML = `
                     <div class="music-info">
                         <h3>${music.title} - ${music.composer}</h3>

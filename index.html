@@ -328,10 +328,6 @@
             display: inline;
         }
 
-        .catalog-list .music-card .music-meta .composer-label {
-            display: none;
-        }
-
         .catalog-list .music-card .actions {
             display: flex;
             flex-direction: row;
@@ -919,15 +915,17 @@
                 
                 const safeTitle = music.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-                // Na visualização em lista, mostra apenas título e compositor na mesma linha
                 const isList = isListView;
                 
+                // ============================================
+                // PARTE CORRIGIDA: MÚSICA E COMPOSITOR NA MESMA LINHA
+                // ============================================
                 card.innerHTML = `
                     <div class="music-info">
-                        <h3>${music.title}</h3>
+                        <h3>${music.title} - ${music.composer}</h3>
                         <div class="music-meta">
                             ${isList ? 
-                                `<p>${music.composer} ${music.book ? '| ' + music.book : ''}</p>` :
+                                `<p>${music.book ? '📖 ' + music.book : ''}</p>` :
                                 `<p><strong>Compositor:</strong> ${music.composer}</p>
                                  <p><strong>Livro:</strong> ${music.book}</p>`
                             }

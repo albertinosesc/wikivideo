@@ -20,10 +20,18 @@
 
         body {
             display: flex;
+            flex-direction: column;
             background-color: var(--bg-color);
             height: 100vh;
             overflow: hidden;
             user-select: none;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 160px); /* Deixa espaço para a barra da playlist embaixo */
+            overflow: hidden;
             position: relative;
         }
 
@@ -47,17 +55,17 @@
             background-color: var(--accent-color);
         }
 
-        /* Coluna Esquerda - Filtros e Busca (Com suporte a transição de recolhimento) */
+        /* Coluna Esquerda - Filtros e Busca */
         aside {
             width: 300px; 
             min-width: 240px;
             max-width: 500px;
             background-color: var(--primary-color);
             color: white;
-            padding: 80px 20px 20px 20px; /* Padding superior aumentado para não cobrir o botão */
+            padding: 80px 20px 20px 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             box-shadow: 3px 0 10px rgba(0,0,0,0.1);
             overflow-y: auto;
             z-index: 10;
@@ -66,7 +74,7 @@
         }
 
         aside.collapsed {
-            margin-left: -300px; /* Oculta deslocando para a esquerda */
+            margin-left: -300px;
             visibility: hidden;
         }
 
@@ -104,35 +112,13 @@
         .radio-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-top: 5px;
+            gap: 6px;
         }
 
         .radio-group label {
             display: flex;
             align-items: center;
             gap: 5px;
-            cursor: pointer;
-        }
-
-        /* Checkbox customizado do Autoplay */
-        .autoplay-group {
-            background: rgba(255,255,255,0.1);
-            padding: 12px;
-            border-radius: 6px;
-            border-left: 4px solid var(--accent-color);
-            margin-top: 5px;
-        }
-        .autoplay-group label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-        .autoplay-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
             cursor: pointer;
         }
 
@@ -169,29 +155,22 @@
             background-color: var(--accent-color);
         }
 
-        .resizer::after {
-            content: "||";
-            color: #7f8c8d;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
         /* Área Central - Catálogo de Músicas */
         main {
             flex: 1;
-            padding: 30px 30px 30px 90px; /* Padding esquerdo aumentado para compensar o botão flutuante */
+            padding: 30px 30px 30px 90px;
             overflow-y: auto;
-            height: 100vh;
+            height: 100%;
             user-select: text;
         }
 
         .header-main {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .header-main h1 {
             color: var(--primary-color);
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
         /* Grid de Músicas */
@@ -205,15 +184,13 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            padding: 20px;
+            padding: 18px;
             border-top: 4px solid var(--accent-color);
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            transition: border-color 0.3s;
+            gap: 12px;
         }
 
-        /* Destaque visual para o card que está tocando no momento */
         .music-card.playing-now {
             border-top-color: #e67e22;
             background-color: #fffaf5;
@@ -222,21 +199,17 @@
 
         .music-info h3 {
             color: var(--primary-color);
-            font-size: 1.3rem;
-            margin-bottom: 5px;
+            font-size: 1.2rem;
+            margin-bottom: 3px;
         }
 
         .music-meta {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #7f8c8d;
             line-height: 1.4;
         }
 
-        .music-meta strong {
-            color: #34495e;
-        }
-
-        /* Mídia Embutida e Links */
+        /* Mídia Embutida */
         .video-container {
             position: relative;
             padding-bottom: 56.25%;
@@ -246,7 +219,7 @@
             background: #000;
         }
 
-        .video-container div.youtube-player-target {
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -257,40 +230,47 @@
 
         .actions {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
             margin-top: auto;
         }
 
-        .btn-view-pdf {
+        .btn-view-pdf, .btn-add-playlist {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background-color: var(--accent-color);
-            color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 4px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             width: 100%;
             cursor: pointer;
             transition: background 0.2s;
         }
 
-        .btn-view-pdf:hover {
-            background-color: #149a80;
+        .btn-view-pdf {
+            background-color: var(--accent-color);
+            color: white;
         }
+        .btn-view-pdf:hover { background-color: #149a80; }
+
+        .btn-add-playlist {
+            background-color: #34495e;
+            color: white;
+        }
+        .btn-add-playlist:hover { background-color: #212f3d; }
 
         /* Painel da Direita - Visualizador do PDF ativo */
         .pdf-preview-panel {
-            width: 45%; 
+            width: 40%; 
             min-width: 300px;
             max-width: 75%;
             background-color: #2c3e50;
             display: none; 
             flex-direction: column;
-            height: 100vh;
+            height: 100%;
             z-index: 5;
             flex-shrink: 0;
         }
@@ -298,158 +278,184 @@
         .pdf-preview-header {
             background-color: #34495e;
             color: white;
-            padding: 15px 20px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .pdf-preview-header h3 {
-            font-size: 1.1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80%;
         }
 
         .btn-close-preview {
             background: none;
             border: none;
             color: #bdc3c7;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             cursor: pointer;
         }
 
-        .btn-close-preview:hover {
+        .pdf-frame { width: 100%; height: 100%; border: none; }
+
+        /* Painel Inferior - Playlist Avançada */
+        footer.playlist-panel {
+            height: 160px;
+            background-color: #2c3e50;
             color: white;
+            border-top: 4px solid #34495e;
+            display: flex;
+            flex-direction: column;
+            padding: 12px 20px;
+            z-index: 30;
         }
 
-        .pdf-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background-color: #7f8c8d;
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 5px;
         }
 
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 50px;
-            color: #7f8c8d;
-            font-size: 1.2rem;
+        .playlist-header h4 { font-size: 1rem; color: #18bc9c; }
+
+        .playlist-controls {
+            display: flex;
+            gap: 10px;
         }
 
-        @media (max-width: 1024px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-                height: auto;
-            }
-            aside {
-                width: 100% !important;
-                max-width: none;
-                height: auto;
-                padding-top: 80px;
-            }
-            aside.collapsed {
-                margin-left: 0;
-                display: none;
-            }
-            .resizer {
-                display: none; 
-            }
-            main {
-                height: auto;
-                padding-left: 30px;
-            }
-            .pdf-preview-panel {
-                width: 100% !important;
-                max-width: none;
-                height: 600px;
-            }
-            .catalog-grid {
-                grid-template-columns: 1fr;
-            }
+        .playlist-controls button, .btn-import-label {
+            background-color: #34495e;
+            color: white;
+            border: 1px solid #7f8c8d;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: bold;
         }
+        .playlist-controls button:hover, .btn-import-label:hover { background-color: var(--accent-color); }
+
+        .playlist-items-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            flex: 1;
+            padding-bottom: 5px;
+            align-items: center;
+        }
+
+        .playlist-item {
+            background-color: #34495e;
+            border: 1px solid #7f8c8d;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .playlist-item.active {
+            border-color: #e67e22;
+            background-color: #d35400;
+        }
+
+        .playlist-item .remove-item {
+            color: #e74c3c;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d; }
+        
+        #fileImport { display: none; }
     </style>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
-    <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
+    <div class="app-container">
+        <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
 
-    <aside id="sidebar">
-        <h2>Filtros e Busca</h2>
-         
-        <div class="form-group">
-            <label for="searchGeneral">Pesquisa Geral:</label>
-            <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
-        </div>
+        <aside id="sidebar">
+            <h2>Filtros e Busca</h2>
+             
+            <div class="form-group">
+                <label for="searchGeneral">Pesquisa Geral:</label>
+                <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
+            </div>
 
-        <div class="form-group">
-            <label for="filterComposer">Compositor:</label>
-            <select id="filterComposer">
-                <option value="">Compositores</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="filterComposer">Compositor:</label>
+                <select id="filterComposer"><option value="">Compositores</option></select>
+            </div>
 
-        <div class="form-group">
-            <label for="filterBook">Referência:</label>
-            <select id="filterBook">
-                <option value="">Referência</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="filterBook">Referência:</label>
+                <select id="filterBook"><option value="">Referência</option></select>
+            </div>
 
-        <div class="form-group">
-            <label>Visualização:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="viewMode" value="all" checked> Todos</label>
-                <label><input type="radio" name="viewMode" value="single"> Individual</label>
+            <div class="form-group">
+                <label>Visualização:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="viewMode" value="all" checked> Todos</label>
+                    <label><input type="radio" name="viewMode" value="single"> Individual</label>
+                </div>
+            </div>
+
+            <button class="btn-clear" id="btnClear">Limpar Filtros</button>
+        </aside>
+
+        <div class="resizer" id="resizerLeft"></div>
+
+        <main>
+            <div class="header-main">
+                <h1>NBM - Vídeos e Partituras</h1>
+            </div>
+            <div class="catalog-grid" id="catalogGrid"></div>
+        </main>
+
+        <div class="resizer" id="resizerRight" style="display: none;"></div>
+
+        <section class="pdf-preview-panel" id="pdfPreviewPanel">
+            <div class="pdf-preview-header">
+                <h3 id="pdfPreviewTitle">Partitura</h3>
+                <button class="btn-close-preview" id="btnClosePreview">&times;</button>
+            </div>
+            <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
+        </section>
+    </div>
+
+    <footer class="playlist-panel">
+        <div class="playlist-header">
+            <h4>Fila de Reprodução Autônoma</h4>
+            <div class="playlist-controls">
+                <button onclick="savePlaylistToStorage()">💾 Salvar Local</button>
+                <button onclick="exportPlaylistJSON()">📤 Exportar JSON</button>
+                <label for="fileImport" class="btn-import-label">📥 Importar JSON</label>
+                <input type="file" id="fileImport" accept=".json" onchange="importPlaylistJSON(event)">
+                <button onclick="clearPlaylist()" style="background-color: #e74c3c;">❌ Limpar Fila</button>
             </div>
         </div>
-
-        <div class="autoplay-group">
-            <label>
-                <input type="checkbox" id="chkAutoplay" checked>
-                <span>Tocar em Sequência (Playlist)</span>
-            </label>
+        <div class="playlist-items-container" id="playlistItemsContainer">
+            <div style="color: #bdc3c7; font-size: 0.85rem;">Sua fila está vazia. Adicione músicas nos cards acima para iniciar.</div>
         </div>
-
-        <button class="btn-clear" id="btnClear">Limpar Filtros</button>
-    </aside>
-
-    <div class="resizer" id="resizerLeft"></div>
-
-    <main>
-        <div class="header-main">
-            <h1>NBM - Vídeos e Partituras</h1>
-        </div>
-
-        <div class="catalog-grid" id="catalogGrid"></div>
-    </main>
-
-    <div class="resizer" id="resizerRight" style="display: none;"></div>
-
-    <section class="pdf-preview-panel" id="pdfPreviewPanel">
-        <div class="pdf-preview-header">
-            <h3 id="pdfPreviewTitle">Partitura</h3>
-            <button class="btn-close-preview" id="btnClosePreview" title="Fechar Visualização">&times;</button>
-        </div>
-        <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
-    </section>
+    </footer>
 
     <script src="dados.js"></script>
     <script>
-        // Elementos DOM Básicos
+        // Carregamento Assíncrono Seguro do Iframe do YouTube
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        let firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
         const searchGeneral = document.getElementById('searchGeneral');
         const filterComposer = document.getElementById('filterComposer');
         const filterBook = document.getElementById('filterBook');
         const viewModeRadios = document.getElementsByName('viewMode');
         const catalogGrid = document.getElementById('catalogGrid');
         const btnClear = document.getElementById('btnClear');
-        const chkAutoplay = document.getElementById('chkAutoplay');
-         
-        // Elementos Layout Redimensionável
+        const playlistItemsContainer = document.getElementById('playlistItemsContainer');
         const sidebar = document.getElementById('sidebar');
         const btnToggleSidebar = document.getElementById('btnToggleSidebar');
         const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
@@ -459,29 +465,20 @@
         const pdfIframe = document.getElementById('pdfIframe');
         const btnClosePreview = document.getElementById('btnClosePreview');
 
-        // Cache para instâncias dos players do YouTube
         let youtubePlayers = {};
-        let currentPlayingId = null;
+        let userPlaylist = []; 
+        let activePlaylistIndex = -1;
 
-        // Gerenciamento do Menu Lateral Retrátil
         btnToggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-            if(sidebar.classList.contains('collapsed')) {
-                resizerLeft.style.display = 'none';
-            } else {
-                resizerLeft.style.display = 'flex';
-            }
+            resizerLeft.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'flex';
         });
 
-        // Inicializa filtros dinâmicos
         function initFilters() {
             const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
             const books = [...new Set(musicDatabase.map(m => m.book))].sort();
-            
-            // Limpa opções antigas mantendo a padrão
             filterComposer.innerHTML = '<option value="">Compositores</option>';
             filterBook.innerHTML = '<option value="">Referência</option>';
-
             composers.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; filterComposer.appendChild(opt); });
             books.forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; filterBook.appendChild(opt); });
         }
@@ -505,79 +502,165 @@
             pdfIframe.src = "";
         }
 
-        // Função chamada nativamente quando a API do YouTube termina de carregar
+        // Chamada pela API do YouTube de forma automatizada externa
         function onYouTubeIframeAPIReady() {
-            // A API está pronta, se o catálogo já foi renderizado, podemos instanciar os players
-            createYouTubePlayers();
+            renderCatalog();
+            loadPlaylistFromStorage();
         }
 
-        // Cria os players controláveis para cada card na tela
         function createYouTubePlayers() {
-            // Limpa referências antigas antes de reconstruir
             youtubePlayers = {};
-            
             const targets = document.querySelectorAll('.youtube-player-target');
             targets.forEach(target => {
                 const videoId = target.getAttribute('data-video-id');
-                const musicId = target.getAttribute('data-music-id');
+                const musicId = parseInt(target.getAttribute('data-music-id'), 10);
                 
-                // Verifica se a API global do YouTube já está carregada
-                if (typeof YT !== 'undefined' && YT.Player) {
-                    youtubePlayers[musicId] = new YT.Player(target.id, {
-                        height: '100%',
-                        width: '100%',
-                        videoId: videoId,
-                        events: {
-                            'onStateChange': (event) => onPlayerStateChange(event, musicId)
-                        }
-                    });
-                }
+                youtubePlayers[musicId] = new YT.Player(target.id, {
+                    height: '100%',
+                    width: '100%',
+                    videoId: videoId,
+                    events: {
+                        'onStateChange': (event) => onPlayerStateChange(event, musicId)
+                    }
+                });
             });
         }
 
-        // Monitora o estado de reprodução dos vídeos
         function onPlayerStateChange(event, musicId) {
-            const cardElement = document.getElementById(`card-${musicId}`);
+            const currentCard = document.getElementById(`card-${musicId}`);
             
             if (event.data === YT.PlayerState.PLAYING) {
-                // Remove destaque do anterior se houver outro tocando
-                if (currentPlayingId && currentPlayingId !== musicId) {
-                    const oldCard = document.getElementById(`card-${currentPlayingId}`);
-                    if (oldCard) oldCard.classList.remove('playing-now');
-                    try { youtubePlayers[currentPlayingId].pauseVideo(); } catch(e){}
+                document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
+                if (currentCard) currentCard.classList.add('playing-now');
+                
+                // Alinha o estado visual se o item estiver na playlist
+                let playlistIdx = userPlaylist.findIndex(id => id === musicId);
+                if(playlistIdx !== -1) {
+                    activePlaylistIndex = playlistIdx;
+                    updatePlaylistUI();
                 }
-                currentPlayingId = musicId;
-                if (cardElement) cardElement.classList.add('playing-now');
             }
 
             if (event.data === YT.PlayerState.ENDED) {
-                if (cardElement) cardElement.classList.remove('playing-now');
-                
-                // Se a reprodução contínua estiver ativa, pula para o próximo visível
-                if (chkAutoplay.checked) {
-                    playNextTrack(musicId);
+                if (currentCard) currentCard.classList.remove('playing-now');
+                playNextInPlaylist();
+            }
+        }
+
+        // LÓGICA CORE DA PLAYLIST PERSONALIZADA
+        function addToPlaylist(musicId) {
+            if (!userPlaylist.includes(musicId)) {
+                userPlaylist.push(musicId);
+                updatePlaylistUI();
+            }
+        }
+
+        function removeFromPlaylist(index) {
+            userPlaylist.splice(index, 1);
+            if (activePlaylistIndex === index) activePlaylistIndex = -1;
+            else if (activePlaylistIndex > index) activePlaylistIndex--;
+            updatePlaylistUI();
+        }
+
+        function clearPlaylist() {
+            userPlaylist = [];
+            activePlaylistIndex = -1;
+            updatePlaylistUI();
+        }
+
+        function updatePlaylistUI() {
+            playlistItemsContainer.innerHTML = "";
+            if (userPlaylist.length === 0) {
+                playlistItemsContainer.innerHTML = `<div style="color: #bdc3c7; font-size: 0.85rem;">Sua fila está vazia. Adicione músicas nos cards acima para iniciar.</div>`;
+                return;
+            }
+
+            userPlaylist.forEach((id, index) => {
+                const song = musicDatabase.find(m => m.id === id);
+                if (!song) return;
+
+                const item = document.createElement('div');
+                item.className = `playlist-item ${index === activePlaylistIndex ? 'active' : ''}`;
+                item.innerHTML = `
+                    <span style="cursor:pointer;" onclick="playPlaylistItem(${index})">▶ <strong>${index + 1}.</strong> ${song.title}</span>
+                    <span class="remove-item" onclick="removeFromPlaylist(${index})">&times;</span>
+                `;
+                playlistItemsContainer.appendChild(item);
+            });
+        }
+
+        function playPlaylistItem(index) {
+            if (index >= 0 && index < userPlaylist.length) {
+                activePlaylistIndex = index;
+                const musicId = userPlaylist[index];
+                updatePlaylistUI();
+
+                const card = document.getElementById(`card-${musicId}`);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
+                    youtubePlayers[musicId].playVideo();
+                } else {
+                    alert("Para iniciar a reprodução automática por este painel, a música precisa estar visível na tela pelos seus filtros atuais.");
                 }
             }
         }
 
-        // Lógica de Autoplay sequencial baseada no catálogo atual filtrado
-        function playNextTrack(currentId) {
-            const allCards = Array.from(catalogGrid.querySelectorAll('.music-card'));
-            const currentIndex = allCards.findIndex(card => card.id === `card-${currentId}`);
-            
-            if (currentIndex !== -1 && currentIndex + 1 < allCards.length) {
-                const nextCard = allCards[currentIndex + 1];
-                const nextMusicId = nextCard.getAttribute('data-id');
-                
-                if (youtubePlayers[nextMusicId] && typeof youtubePlayers[nextMusicId].playVideo === 'function') {
-                    // Rola a tela suavemente até o card que vai começar a tocar
-                    nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    youtubePlayers[nextMusicId].playVideo();
-                }
+        function playNextInPlaylist() {
+            if (activePlaylistIndex + 1 < userPlaylist.length) {
+                playPlaylistItem(activePlaylistIndex + 1);
             }
         }
 
-        // Lógica de Renderização das Músicas
+        // IMPORTAÇÃO / EXPORTAÇÃO JSON & STORAGE
+        function savePlaylistToStorage() {
+            localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
+            alert("Fila de reprodução salva com sucesso neste navegador!");
+        }
+
+        function loadPlaylistFromStorage() {
+            const stored = localStorage.getItem('nbm_playlist');
+            if (stored) {
+                userPlaylist = JSON.parse(stored);
+                updatePlaylistUI();
+            }
+        }
+
+        function exportPlaylistJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userPlaylist));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "playlist_nbm.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importPlaylistJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed)) {
+                        userPlaylist = parsed.map(Number).filter(id => !isNaN(id));
+                        activePlaylistIndex = -1;
+                        updatePlaylistUI();
+                        alert("Playlist importada com sucesso!");
+                    } else {
+                        alert("Arquivo JSON inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // RENDERIZAÇÃO DO CATÁLOGO
         function renderCatalog() {
             const query = searchGeneral.value.toLowerCase();
             const selectedComposer = filterComposer.value;
@@ -593,7 +676,6 @@
 
             if (mode === 'single' && filtered.length > 0) filtered = [filtered[0]];
             catalogGrid.innerHTML = "";
-            currentPlayingId = null;
 
             if (filtered.length === 0) { 
                 catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`; 
@@ -606,14 +688,13 @@
                 const card = document.createElement('div');
                 card.className = 'music-card';
                 card.id = `card-${music.id}`;
-                card.setAttribute('data-id', music.id);
                 
                 card.innerHTML = `
                     <div class="music-info">
                         <h3>${music.title}</h3>
                         <div class="music-meta">
                             <p><strong>Compositor:</strong> ${music.composer}</p>
-                            <p><strong>Referência/Livro:</strong> ${music.book}</p>
+                            <p><strong>Livro:</strong> ${music.book}</p>
                         </div>
                     </div>
                     ${youtubeId ? `
@@ -621,50 +702,42 @@
                         <div id="player-${music.id}" class="youtube-player-target" data-video-id="${youtubeId}" data-music-id="${music.id}"></div>
                     </div>` : ''}
                     <div class="actions">
-                        <button class="btn-view-pdf" onclick="openPdfPreview('${music.title.replace(/'/g, "\\'")}', '${music.pdfUrl}')">📄 Visualizar Partitura Aqui</button>
+                        <button class="btn-view-pdf" onclick="openPdfPreview('${music.title.replace(/'/g, "\\'")}', '${music.pdfUrl}')">📄 Ver Partitura</button>
+                        <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Playlist</button>
                     </div>
                 `;
                 catalogGrid.appendChild(card);
             });
 
-            // Re-instancia os objetos de controle de vídeo da API para os novos cards na tela
-            setTimeout(createYouTubePlayers, 100);
+            setTimeout(createYouTubePlayers, 150);
         }
 
-        // MECANISMO DE ARRASTAR COLUNAS
+        // Arrastadores Laterais
         function setupResizer(resizer, targetElement, side) {
             let startX, startWidth;
-            resizer.addEventListener('mousedown', initDrag);
-
-            function initDrag(e) {
+            resizer.addEventListener('mousedown', (e) => {
                 startX = e.clientX;
                 startWidth = parseInt(document.defaultView.getComputedStyle(targetElement).width, 10);
                 resizer.classList.add('dragging');
                 pdfIframe.style.pointerEvents = 'none'; 
+                const doDrag = (ev) => {
+                    if (side === 'left') targetElement.style.width = (startWidth + ev.clientX - startX) + 'px';
+                    else if (side === 'right') targetElement.style.width = (startWidth - (ev.clientX - startX)) + 'px';
+                };
+                const stopDrag = () => {
+                    resizer.classList.remove('dragging');
+                    pdfIframe.style.pointerEvents = 'auto'; 
+                    document.documentElement.removeEventListener('mousemove', doDrag);
+                    document.documentElement.removeEventListener('mouseup', stopDrag);
+                };
                 document.documentElement.addEventListener('mousemove', doDrag);
                 document.documentElement.addEventListener('mouseup', stopDrag);
-            }
-
-            function doDrag(e) {
-                if (side === 'left') {
-                    targetElement.style.width = (startWidth + e.clientX - startX) + 'px';
-                } else if (side === 'right') {
-                    targetElement.style.width = (startWidth - (e.clientX - startX)) + 'px';
-                }
-            }
-
-            function stopDrag() {
-                resizer.classList.remove('dragging');
-                pdfIframe.style.pointerEvents = 'auto'; 
-                document.documentElement.removeEventListener('mousemove', doDrag);
-                document.documentElement.removeEventListener('mouseup', stopDrag);
-            }
+            });
         }
 
         setupResizer(resizerLeft, sidebar, 'left');
         setupResizer(resizerRight, pdfPreviewPanel, 'right');
 
-        // Event Listeners de Filtros
         searchGeneral.addEventListener('input', renderCatalog);
         filterComposer.addEventListener('change', renderCatalog);
         filterBook.addEventListener('change', renderCatalog);
@@ -675,13 +748,9 @@
             closePdfPreview(); renderCatalog();
         });
 
-        // Inicialização protegida contra atrasos de carregamento
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof musicDatabase !== 'undefined' && typeof getYouTubeId !== 'undefined') {
                 initFilters();
-                renderCatalog();
-            } else {
-                console.error("Erro: O arquivo dados.js não foi carregado corretamente.");
             }
         });
     </script>

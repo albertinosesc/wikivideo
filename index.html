@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acervo Musical - Vídeos e Partituras</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #18bc9c;
+            --bg-color: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Coluna Esquerda - Filtros e Busca */
+        aside {
+            width: 300px; 
+            min-width: 240px;
+            max-width: 500px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        aside h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #ecf0f1;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            user-select: text;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: 2px solid var(--accent-color);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .btn-clear {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: auto;
+        }
+
+        .btn-clear:hover {
+            background-color: #c0392b;
+        }
+
+        /* Barras de Redimensionamento (Resizers) */
+        .resizer {
+            width: 8px;
+            background-color: #bdc3c7;
+            cursor: col-resize;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resizer:hover, .resizer.dragging {
+            background-color: var(--accent-color);
+        }
+
+        .resizer::after {
+            content: "||";
+            color: #7f8c8d;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* Área Central - Catálogo de Músicas */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            height: 100vh;
+            user-select: text;
+        }
+
+        .header-main {
+            margin-bottom: 30px;
+        }
+
+        .header-main h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        /* Grid de Músicas */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+        }
+
+        .music-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-top: 4px solid var(--accent-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .music-info h3 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .music-meta {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .music-meta strong {
+            color: #34495e;
+        }
+
+        /* Mídia Embutida e Links */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 4px;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-view-pdf {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-view-pdf:hover {
+            background-color: #149a80;
+        }
+
+        /* Painel da Direita - Visualizador do PDF ativo */
+        .pdf-preview-panel {
+            width: 45%; 
+            min-width: 300px;
+            max-width: 75%;
+            background-color: #2c3e50;
+            display: none; 
+            flex-direction: column;
+            height: 100vh;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+
+        .pdf-preview-header {
+            background-color: #34495e;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pdf-preview-header h3 {
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .btn-close-preview {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .btn-close-preview:hover {
+            color: white;
+        }
+
+        .pdf-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #7f8c8d;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+                overflow: auto;
+                height: auto;
+            }
+            aside {
+                width: 100% !important;
+                max-width: none;
+                height: auto;
+            }
+            .resizer {
+                display: none; 
+            }
+            main {
+                height: auto;
+            }
+            .pdf-preview-panel {
+                width: 100% !important;
+                max-width: none;
+                height: 600px;
+            }
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <h2>Filtros e Busca</h2>
+        
+        <div class="form-group">
+            <label for="searchGeneral">Pesquisa Geral:</label>
+            <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
+        </div>
+
+        <div class="form-group">
+            <label for="filterComposer">Filtrar por Compositor:</label>
+            <select id="filterComposer">
+                <option value="">Todos os Compositores</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="filterBook">Filtrar por Livro / Referência:</label>
+            <select id="filterBook">
+                <option value="">Todos os Livros</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Visualização:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="viewMode" value="all" checked> Mostrar Todas no Painel</label>
+                <label><input type="radio" name="viewMode" value="single"> Focar em Apenas Uma</label>
+            </div>
+        </div>
+
+        <button class="btn-clear" id="btnClear">Limpar Filtros</button>
+    </aside>
+
+    <div class="resizer" id="resizerLeft"></div>
+
+    <main>
+        <div class="header-main">
+            <h1>Acervo de Músicas</h1>
+        </div>
+
+        <div class="catalog-grid" id="catalogGrid">
+            </div>
+    </main>
+
+    <div class="resizer" id="resizerRight" style="display: none;"></div>
+
+    <section class="pdf-preview-panel" id="pdfPreviewPanel">
+        <div class="pdf-preview-header">
+            <h3 id="pdfPreviewTitle">Partitura</h3>
+            <button class="btn-close-preview" id="btnClosePreview" title="Fechar Visualização">&times;</button>
+        </div>
+        <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
+    </section>
+
+    <script src="./dados.js"></script>
+    <script>
+        // Elementos DOM Básicos
+        const searchGeneral = document.getElementById('searchGeneral');
+        const filterComposer = document.getElementById('filterComposer');
+        const filterBook = document.getElementById('filterBook');
+        const viewModeRadios = document.getElementsByName('viewMode');
+        const catalogGrid = document.getElementById('catalogGrid');
+        const btnClear = document.getElementById('btnClear');
+        
+        // Elementos Layout Redimensionável
+        const sidebar = document.getElementById('sidebar');
+        const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
+        const resizerLeft = document.getElementById('resizerLeft');
+        const resizerRight = document.getElementById('resizerRight');
+        const pdfPreviewTitle = document.getElementById('pdfPreviewTitle');
+        const pdfIframe = document.getElementById('pdfIframe');
+        const btnClosePreview = document.getElementById('btnClosePreview');
+
+        // Inicializa filtros dinâmicos
+        function initFilters() {
+            const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
+            const books = [...new Set(musicDatabase.map(m => m.book))].sort();
+            composers.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; filterComposer.appendChild(opt); });
+            books.forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; filterBook.appendChild(opt); });
+        }
+
+        function getViewMode() {
+            let mode = 'all';
+            viewModeRadios.forEach(radio => { if (radio.checked) mode = radio.value; });
+            return mode;
+        }
+
+        function openPdfPreview(title, url) {
+            pdfPreviewTitle.textContent = `Partitura: ${title}`;
+            pdfIframe.src = url;
+            pdfPreviewPanel.style.display = 'flex';
+            resizerRight.style.display = 'flex'; 
+        }
+
+        function closePdfPreview() {
+            pdfPreviewPanel.style.display = 'none';
+            resizerRight.style.display = 'none'; 
+            pdfIframe.src = "";
+        }
+
+        // Lógica de Renderização das Músicas
+        function renderCatalog() {
+            const query = searchGeneral.value.toLowerCase();
+            const selectedComposer = filterComposer.value;
+            const selectedBook = filterBook.value;
+            const mode = getViewMode();
+
+            let filtered = musicDatabase.filter(music => {
+                const matchGeneral = music.title.toLowerCase().includes(query) || music.composer.toLowerCase().includes(query) || music.book.toLowerCase().includes(query);
+                const matchComposer = selectedComposer === "" || music.composer === selectedComposer;
+                const matchBook = selectedBook === "" || music.book === selectedBook;
+                return matchGeneral && matchComposer && matchBook;
+            });
+
+            if (mode === 'single' && filtered.length > 0) filtered = [filtered[0]];
+            catalogGrid.innerHTML = "";
+            if (filtered.length === 0) { catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`; return; }
+
+            filtered.forEach(music => {
+                // Obtém o ID limpo usando a função do arquivo dados.js
+                const youtubeId = getYouTubeId(music.youtubeUrl);
+
+                const card = document.createElement('div');
+                card.className = 'music-card';
+                card.innerHTML = `
+                    <div class="music-info">
+                        <h3>${music.title}</h3>
+                        <div class="music-meta">
+                            <p><strong>Compositor:</strong> ${music.composer}</p>
+                            <p><strong>Referência/Livro:</strong> ${music.book}</p>
+                        </div>
+                    </div>
+                    ${youtubeId ? `<div class="video-container"><iframe src="https://www.youtube.com/embed/${youtubeId}" allowfullscreen></iframe></div>` : ''}
+                    <div class="actions">
+                        <button class="btn-view-pdf" onclick="openPdfPreview('${music.title.replace(/'/g, "\\'")}', '${music.pdfUrl}')">📄 Visualizar Partitura Aqui</button>
+                    </div>
+                `;
+                catalogGrid.appendChild(card);
+            });
+        }
+
+        // MECANISMO DE ARRASTAR COLUNAS
+        function setupResizer(resizer, targetElement, side) {
+            let startX, startWidth;
+            resizer.addEventListener('mousedown', initDrag);
+
+            function initDrag(e) {
+                startX = e.clientX;
+                startWidth = parseInt(document.defaultView.getComputedStyle(targetElement).width, 10);
+                resizer.classList.add('dragging');
+                pdfIframe.style.pointerEvents = 'none'; 
+                document.documentElement.addEventListener('mousemove', doDrag);
+                document.documentElement.addEventListener('mouseup', stopDrag);
+            }
+
+            function doDrag(e) {
+                if (side === 'left') {
+                    targetElement.style.width = (startWidth + e.clientX - startX) + 'px';
+                } else if (side === 'right') {
+                    targetElement.style.width = (startWidth - (e.clientX - startX)) + 'px';
+                }
+            }
+
+            function stopDrag() {
+                resizer.classList.remove('dragging');
+                pdfIframe.style.pointerEvents = 'auto'; 
+                document.documentElement.removeEventListener('mousemove', doDrag);
+                document.documentElement.removeEventListener('mouseup', stopDrag);
+            }
+        }
+
+        setupResizer(resizerLeft, sidebar, 'left');
+        setupResizer(resizerRight, pdfPreviewPanel, 'right');
+
+        // Event Listeners
+        searchGeneral.addEventListener('input', renderCatalog);
+        filterComposer.addEventListener('change', renderCatalog);
+        filterBook.addEventListener('change', renderCatalog);
+        viewModeRadios.forEach(radio => radio.addEventListener('change', renderCatalog));
+        btnClosePreview.addEventListener('click', closePdfPreview);
+        btnClear.addEventListener('click', () => {
+            searchGeneral.value = ""; filterComposer.value = ""; filterBook.value = ""; viewModeRadios[0].checked = true;
+            closePdfPreview(); renderCatalog();
+        });
+
+        // Inicialização
+        initFilters();
+        renderCatalog();
+    </script>
+</body>
+</html>

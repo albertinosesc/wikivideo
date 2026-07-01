@@ -369,7 +369,6 @@
             .catalog-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
@@ -440,6 +439,12 @@
 
     <script src="dados.js"></script>
     <script>
+        // Carregamento programático e ordenado do script do Iframe do YouTube
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        let firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
         const searchGeneral = document.getElementById('searchGeneral');
         const filterComposer = document.getElementById('filterComposer');
         const filterBook = document.getElementById('filterBook');
@@ -459,6 +464,7 @@
         let youtubePlayers = {};
         let userPlaylist = []; 
         let activePlaylistIndex = -1;
+        let isApiReady = false;
 
         btnToggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
@@ -466,6 +472,7 @@
         });
 
         function initFilters() {
+            if (typeof musicDatabase === 'undefined') return;
             const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
             const books = [...new Set(musicDatabase.map(m => m.book))].sort();
             filterComposer.innerHTML = '<option value="">Compositores</option>';
@@ -493,10 +500,13 @@
             pdfIframe.src = "";
         }
 
-        // Executado automaticamente pela API do YouTube Iframe
+        // Esta função global é chamada nativamente pelo script carregado do YouTube
         function onYouTubeIframeAPIReady() {
-            renderCatalog();
-            loadPlaylistFromStorage();
+            isApiReady = true;
+            if (typeof musicDatabase !== 'undefined') {
+                renderCatalog();
+                loadPlaylistFromStorage();
+            }
         }
 
         function createYouTubePlayers() {
@@ -539,7 +549,6 @@
             }
         }
 
-        // GERENCIAMENTO DA FILA VERTICAL
         function addToPlaylist(musicId) {
             if (!userPlaylist.includes(musicId)) {
                 userPlaylist.push(musicId);
@@ -597,7 +606,7 @@
                 if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
                     youtubePlayers[musicId].playVideo();
                 } else {
-                    alert("Aviso: Para rodar de forma contínua, certifique-se de retirar filtros restritivos para manter a música visível no catálogo.");
+                    alert("Aviso: Para rodar esta música, certifique-se de que os seus filtros atuais permitem que ela apareça no catálogo central.");
                 }
             }
         }
@@ -608,7 +617,6 @@
             }
         }
 
-        // PERSISTÊNCIA E JSON
         function savePlaylistToStorage() {
             localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
             alert("Fila de reprodução salva localmente com sucesso!");
@@ -654,8 +662,9 @@
             reader.readAsText(file);
         }
 
-        // RENDERIZAÇÃO DO CATÁLOGO DE CARD
         function renderCatalog() {
+            if (typeof musicDatabase === 'undefined') return;
+
             const query = searchGeneral.value.toLowerCase();
             const selectedComposer = filterComposer.value;
             const selectedBook = filterBook.value;
@@ -703,11 +712,11 @@
                 catalogGrid.appendChild(card);
             });
 
-            // Pequeno delay para garantir estabilidade no carregamento dos iframes
-            setTimeout(createYouTubePlayers, 200);
+            if (isApiReady) {
+                setTimeout(createYouTubePlayers, 150);
+            }
         }
 
-        // Redimensionamento de layout por arrasto
         function setupResizer(resizer, targetElement, side) {
             let startX, startWidth;
             resizer.addEventListener('mousedown', (e) => {
@@ -744,8 +753,10 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof musicDatabase !== 'undefined' && typeof getYouTubeId !== 'undefined') {
-                initFilters();
+            initFilters();
+            if (isApiReady) {
+                renderCatalog();
+                loadPlaylistFromStorage();
             }
         });
     </script>

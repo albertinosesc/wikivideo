@@ -315,7 +315,7 @@
 
     <aside id="sidebar">
         <h2>Filtros e Busca</h2>
-        
+         
         <div class="form-group">
             <label for="searchGeneral">Pesquisa Geral:</label>
             <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
@@ -354,7 +354,7 @@
         </div>
 
         <div class="catalog-grid" id="catalogGrid">
-            </div>
+             </div>
     </main>
 
     <div class="resizer" id="resizerRight" style="display: none;"></div>
@@ -376,7 +376,7 @@
         const viewModeRadios = document.getElementsByName('viewMode');
         const catalogGrid = document.getElementById('catalogGrid');
         const btnClear = document.getElementById('btnClear');
-        
+         
         // Elementos Layout Redimensionável
         const sidebar = document.getElementById('sidebar');
         const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
@@ -432,7 +432,6 @@
             if (filtered.length === 0) { catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`; return; }
 
             filtered.forEach(music => {
-                // Obtém o ID limpo usando a função do arquivo dados.js
                 const youtubeId = getYouTubeId(music.youtubeUrl);
 
                 const card = document.createElement('div');
@@ -498,9 +497,15 @@
             closePdfPreview(); renderCatalog();
         });
 
-        // Inicialização
-        initFilters();
-        renderCatalog();
+        // Inicialização protegida contra atrasos de carregamento de scripts externos
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof musicDatabase !== 'undefined' && typeof getYouTubeId !== 'undefined') {
+                initFilters();
+                renderCatalog();
+            } else {
+                console.error("Erro: O arquivo dados.js não foi carregado corretamente ou está ausente no mesmo diretório.");
+            }
+        });
     </script>
 </body>
 </html>

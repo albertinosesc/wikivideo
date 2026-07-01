@@ -375,7 +375,7 @@
     <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Recolher/Expandir Filtros">☰ Filtros</button>
 
     <aside id="sidebar">
-        <h1>NBM Vídeos</h1></h2>
+        <h1>NBM</h1>
         <h2>Filtros e Busca</h2>
          
         <div class="form-group">
@@ -440,7 +440,17 @@
 
     <script src="dados.js"></script>
     <script>
-        // Carregamento programático e ordenado do script do Iframe do YouTube
+        // Função interna e autônoma de extração de ID do YouTube (Blindada)
+        function localGetYouTubeId(url) {
+            if (!url) return null;
+            url = url.trim();
+            if (url.length === 11) return url; // Caso já seja o ID puro
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Carregamento assíncrono forçado da API do YouTube
         let tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         let firstScriptTag = document.getElementsByTagName('script')[0];
@@ -501,7 +511,6 @@
             pdfIframe.src = "";
         }
 
-        // Esta função global é chamada nativamente pelo script carregado do YouTube
         function onYouTubeIframeAPIReady() {
             isApiReady = true;
             if (typeof musicDatabase !== 'undefined') {
@@ -532,7 +541,6 @@
 
         function onPlayerStateChange(event, musicId) {
             const currentCard = document.getElementById(`card-${musicId}`);
-            
             if (event.data === YT.PlayerState.PLAYING) {
                 document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
                 if (currentCard) currentCard.classList.add('playing-now');
@@ -543,7 +551,6 @@
                     updatePlaylistUI();
                 }
             }
-
             if (event.data === YT.PlayerState.ENDED) {
                 if (currentCard) currentCard.classList.remove('playing-now');
                 playNextInPlaylist();
@@ -557,6 +564,7 @@
             }
         }
 
+        // Continuação das funções da Fila
         function removeFromPlaylist(index) {
             userPlaylist.splice(index, 1);
             if (activePlaylistIndex === index) activePlaylistIndex = -1;
@@ -576,11 +584,9 @@
                 playlistItemsContainer.innerHTML = `<div style="color: #bdc3c7; font-size: 0.8rem; text-align: center; padding: 10px;">A fila está vazia.</div>`;
                 return;
             }
-
             userPlaylist.forEach((id, index) => {
                 const song = musicDatabase.find(m => m.id === id);
                 if (!song) return;
-
                 const item = document.createElement('div');
                 item.className = `playlist-item ${index === activePlaylistIndex ? 'active' : ''}`;
                 item.innerHTML = `
@@ -598,16 +604,11 @@
                 activePlaylistIndex = index;
                 const musicId = userPlaylist[index];
                 updatePlaylistUI();
-
                 const card = document.getElementById(`card-${musicId}`);
-                if (card) {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                 if (youtubePlayers[musicId] && typeof youtubePlayers[musicId].playVideo === 'function') {
                     youtubePlayers[musicId].playVideo();
-                } else {
-                    alert("Aviso: Para rodar esta música, certifique-se de que os seus filtros atuais permitem que ela apareça no catálogo central.");
                 }
             }
         }
@@ -620,7 +621,7 @@
 
         function savePlaylistToStorage() {
             localStorage.setItem('nbm_playlist', JSON.stringify(userPlaylist));
-            alert("Fila de reprodução salva localmente com sucesso!");
+            alert("Fila de reprodução salva localmente!");
         }
 
         function loadPlaylistFromStorage() {
@@ -652,13 +653,9 @@
                         userPlaylist = parsed.map(Number).filter(id => !isNaN(id));
                         activePlaylistIndex = -1;
                         updatePlaylistUI();
-                        alert("Playlist importada com sucesso!");
-                    } else {
-                        alert("Formato de arquivo JSON inválido.");
+                        alert("Playlist importada!");
                     }
-                } catch (err) {
-                    alert("Erro ao ler o arquivo JSON.");
-                }
+                } catch (err) { alert("Erro ao ler JSON."); }
             };
             reader.readAsText(file);
         }
@@ -687,7 +684,8 @@
             }
 
             filtered.forEach(music => {
-                const youtubeId = getYouTubeId(music.youtubeUrl);
+                // Utilizando a função de extração local e segura construída no index
+                const youtubeId = localGetYouTubeId(music.youtubeUrl);
 
                 const card = document.createElement('div');
                 card.className = 'music-card';
@@ -755,7 +753,8 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             initFilters();
-            if (isApiReady) {
+            if (isApiReady || (typeof YT !== 'undefined' && YT.Player)) {
+                isApiReady = true;
                 renderCatalog();
                 loadPlaylistFromStorage();
             }

@@ -1,0 +1,28 @@
+// BANCO DE DADOS ACESSO COMPARTILHADO
+// Você pode colar o link completo do YouTube. O sistema extrai o ID automaticamente!
+const musicDatabase = [
+    { 
+        id: 1, 
+        title: "A Casa", 
+        composer: "Vinicius de Moraes / Toquinho", 
+        book: "Arca de Noé", 
+        pdfUrl: "./partituras/a_casa.pdf", 
+        youtubeUrl: "https://www.youtube.com/watch?v=K3DEgVGA0Gs&list=RDK3DEgVGA0Gs&start_radio=1" 
+    },
+    { 
+        id: 2, 
+        title: "O Caderno", 
+        composer: "Toquinho", 
+        book: "Música na Infância Vol. 1", 
+        pdfUrl: "./partituras/o_caderno.pdf", 
+        youtubeUrl: "https://www.youtube.com/watch?v=_0mpldsbZdc" 
+    }
+];
+
+// Função auxiliar para extrair o ID do YouTube de qualquer formato de link
+function getYouTubeId(url) {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}

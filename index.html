@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NBM - Vídeos_Partituras</title>
     <style>
         :root {
@@ -27,7 +27,6 @@
             position: relative;
         }
 
-        /* Botão para Recolher/Expandir o Filtro */
         .btn-toggle-sidebar {
             position: absolute;
             top: 20px;
@@ -47,9 +46,8 @@
             background-color: var(--accent-color);
         }
 
-        /* Coluna Esquerda - Filtros e Busca */
         aside {
-            width: 320px; 
+            width: 320px;
             min-width: 280px;
             max-width: 500px;
             background-color: var(--primary-color);
@@ -64,12 +62,10 @@
             flex-shrink: 0;
             transition: margin-left 0.3s ease, visibility 0.3s ease;
         }
-
         aside.collapsed {
             margin-left: -320px;
             visibility: hidden;
         }
-
         aside h1 { text-align: center; margin-bottom: 10px; }
         aside h2, aside h3 {
             font-size: 1.3rem;
@@ -77,7 +73,6 @@
             padding-bottom: 5px;
             margin-top: 5px;
         }
-
         aside h3 {
             color: var(--accent-color);
             font-size: 1.1rem;
@@ -89,12 +84,10 @@
             flex-direction: column;
             gap: 5px;
         }
-
         .form-group label {
             font-size: 0.85rem;
             color: #ecf0f1;
         }
-
         input[type="text"], select {
             padding: 8px 10px;
             border: none;
@@ -103,7 +96,6 @@
             width: 100%;
             user-select: text;
         }
-
         input[type="text"]:focus, select:focus {
             outline: 2px solid var(--accent-color);
         }
@@ -113,7 +105,6 @@
             flex-direction: column;
             gap: 6px;
         }
-
         .radio-group label {
             display: flex;
             align-items: center;
@@ -135,20 +126,17 @@
         }
         .btn-clear:hover { background-color: #c0392b; }
 
-        /* Fila de Reprodução na Sidebar */
         .playlist-vertical-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex: 1;
         }
-
         .playlist-actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
-
         .playlist-actions-grid button, .btn-import-label {
             background-color: #34495e;
             color: white;
@@ -161,8 +149,8 @@
             text-align: center;
             display: block;
         }
-        .playlist-actions-grid button:hover, .btn-import-label:hover { 
-            background-color: var(--accent-color); 
+        .playlist-actions-grid button:hover, .btn-import-label:hover {
+            background-color: var(--accent-color);
         }
 
         .playlist-list {
@@ -176,7 +164,6 @@
             gap: 6px;
             border: 1px solid #34495e;
         }
-
         .playlist-item {
             background-color: #34495e;
             border: 1px solid #7f8c8d;
@@ -188,12 +175,10 @@
             align-items: center;
             gap: 5px;
         }
-
         .playlist-item.active {
             border-color: #e67e22;
             background-color: #d35400;
         }
-
         .playlist-item .item-text {
             cursor: pointer;
             overflow: hidden;
@@ -201,7 +186,6 @@
             white-space: nowrap;
             flex: 1;
         }
-
         .playlist-item .remove-item {
             color: #e74c3c;
             cursor: pointer;
@@ -210,7 +194,6 @@
             padding: 0 4px;
         }
 
-        /* Barra de Redimensionamento */
         .resizer {
             width: 8px;
             background-color: #bdc3c7;
@@ -224,7 +207,6 @@
         }
         .resizer:hover, .resizer.dragging { background-color: var(--accent-color); }
 
-        /* Área Principal da Tela */
         .main-wrapper {
             flex: 1;
             display: flex;
@@ -239,26 +221,22 @@
             overflow-y: auto;
             user-select: text;
         }
-
         .header-main {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
         }
-
         .header-main h1 {
             color: var(--primary-color);
             font-size: 1.8rem;
         }
-
         .header-controls {
             display: flex;
             gap: 10px;
             align-items: center;
         }
 
-        /* Botão de toggle entre Grid e Lista */
         .btn-toggle-view {
             background-color: var(--primary-color);
             color: white;
@@ -277,27 +255,20 @@
             background-color: var(--accent-color);
         }
 
-        /* ============================================
-                   VISUALIZAÇÃO EM GRADE (PADRÃO)
-                   ============================================ */
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
 
-        /* ============================================
-                   VISUALIZAÇÃO EM LISTA (COMPACTA)
-                   ============================================ */
         .catalog-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-
         .catalog-list .music-card {
             display: grid;
-            grid-template-columns: 1fr 2fr 1.2fr; /* Aumentei a terceira coluna para caber 4 botões */
+            grid-template-columns: 1fr 2fr 1.2fr;
             align-items: center;
             gap: 12px;
             padding: 6px 12px;
@@ -305,29 +276,24 @@
             border-radius: 4px;
             min-height: 44px;
         }
-
         .catalog-list .music-card .music-info {
             display: flex;
             flex-direction: column;
             gap: 0;
         }
-
         .catalog-list .music-card .music-info h3 {
             font-size: 0.9rem;
             margin-bottom: 0;
             color: var(--primary-color);
         }
-
         .catalog-list .music-card .music-meta {
             font-size: 0.7rem;
             color: #7f8c8d;
             line-height: 1.2;
         }
-
         .catalog-list .music-card .music-meta p {
             display: inline;
         }
-
         .catalog-list .music-card .actions {
             display: flex;
             flex-direction: row;
@@ -336,7 +302,6 @@
             justify-content: flex-end;
             flex-wrap: wrap;
         }
-
         .catalog-list .music-card .actions button {
             width: auto;
             padding: 3px 8px;
@@ -344,26 +309,21 @@
             white-space: nowrap;
             border-radius: 3px;
         }
-
         .catalog-list .music-card .btn-view-pdf {
             background-color: var(--accent-color);
             color: white;
         }
-
         .catalog-list .music-card .btn-add-playlist {
             background-color: #34495e;
             color: white;
         }
-
         .catalog-list .music-card .btn-play-now {
             background-color: #e67e22;
             color: white;
         }
-
         .catalog-list .music-card .btn-play-now:hover {
             background-color: #d35400;
         }
-
         .catalog-list .music-card .btn-mp3 {
             background-color: #8e44ad;
             color: white;
@@ -371,7 +331,6 @@
         .catalog-list .music-card .btn-mp3:hover {
             background-color: #6c3483;
         }
-
         .catalog-list .music-card.playing-now {
             border-top-color: #e67e22;
             background-color: #fffaf5;
@@ -388,19 +347,16 @@
             gap: 12px;
             justify-content: space-between;
         }
-
         .music-card.playing-now {
             border-top-color: #e67e22;
             background-color: #fffaf5;
             box-shadow: 0 4px 12px rgba(230, 126, 34, 0.15);
         }
-
         .music-info h3 {
             color: var(--primary-color);
             font-size: 1.1rem;
             margin-bottom: 3px;
         }
-
         .music-meta {
             font-size: 0.85rem;
             color: #7f8c8d;
@@ -413,7 +369,6 @@
             gap: 8px;
             margin-top: 10px;
         }
-
         .btn-view-pdf, .btn-add-playlist, .btn-play-now, .btn-mp3 {
             display: inline-flex;
             align-items: center;
@@ -437,7 +392,6 @@
         .btn-mp3 { background-color: #8e44ad; color: white; }
         .btn-mp3:hover { background-color: #6c3483; }
 
-        /* PAINEL HORIZONTAL DO PLAYER */
         .player-horizontal-container {
             height: 160px;
             background-color: #2c3e50;
@@ -449,13 +403,11 @@
             box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
             z-index: 30;
         }
-
         .player-horizontal-info {
             flex: 1;
             color: white;
             min-width: 180px;
         }
-
         .player-horizontal-info h4 {
             font-size: 1rem;
             color: #e67e22;
@@ -464,12 +416,10 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .player-horizontal-info p {
             font-size: 0.8rem;
             color: #bdc3c7;
         }
-
         .player-horizontal-video-box {
             width: 240px;
             height: 135px;
@@ -479,26 +429,23 @@
             position: relative;
             flex-shrink: 0;
         }
-
         #youtube-global-player {
             width: 100%;
             height: 100%;
             border: 0;
         }
 
-        /* Visualizador de PDF Lateral */
         .pdf-preview-panel {
-            width: 40%; 
+            width: 40%;
             min-width: 300px;
             max-width: 75%;
             background-color: #2c3e50;
-            display: none; 
+            display: none;
             flex-direction: column;
             height: 100vh;
             z-index: 5;
             flex-shrink: 0;
         }
-
         .pdf-preview-header {
             background-color: #34495e;
             color: white;
@@ -507,7 +454,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .btn-close-preview {
             background: none;
             border: none;
@@ -515,7 +461,6 @@
             font-size: 1.4rem;
             cursor: pointer;
         }
-
         .pdf-frame { width: 100%; height: 100%; border: none; }
         .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d; }
         #fileImport { display: none; }
@@ -526,7 +471,7 @@
             aside.collapsed { margin-left: 0; display: none; }
             .resizer { display: none; }
             main { height: auto; padding-left: 20px; }
-            
+
             .catalog-list .music-card {
                 grid-template-columns: 1fr;
                 gap: 8px;
@@ -543,12 +488,11 @@
                 font-size: 0.7rem;
                 padding: 4px 8px;
             }
-            
+
             .player-horizontal-container { flex-direction: column; height: auto; align-items: stretch; }
             .player-horizontal-video-box { width: 100%; height: 200px; }
             .pdf-preview-panel { width: 100% !important; max-width: none; height: 600px; }
             .catalog-grid { grid-template-columns: 1fr; }
-            
             .header-main {
                 flex-direction: column;
                 gap: 10px;
@@ -564,7 +508,7 @@
     <aside id="sidebar">
         <h1><img src="imagem/logo1.png" alt="NBM" style="height: 40px; width: auto;"></h1>
         <h2>Filtros e Busca</h2>
-         
+
         <div class="form-group">
             <label for="searchGeneral">Pesquisa Geral:</label>
             <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
@@ -599,7 +543,6 @@
                 <input type="file" id="fileImport" accept=".json" onchange="importPlaylistJSON(event)">
                 <button onclick="clearPlaylist()" style="background-color: #e74c3c; grid-column: span 2;">❌ Limpar Fila</button>
             </div>
-            
             <div class="playlist-list" id="playlistItemsContainer">
                 <div style="color: #bdc3c7; font-size: 0.8rem; text-align: center; padding: 10px;">A fila está vazia.</div>
             </div>
@@ -608,7 +551,6 @@
 
     <div class="resizer" id="resizerLeft"></div>
 
-    <!-- Wrapper da direita unindo o Main e o Player Horizontal -->
     <div class="main-wrapper">
         <main>
             <div class="header-main">
@@ -622,7 +564,6 @@
             <div class="catalog-list" id="catalogGrid"></div>
         </main>
 
-        <!-- CONTAINER DO PLAYER HORIZONTAL COMPACTO -->
         <div class="player-horizontal-container" id="horizontalPlayerPanel">
             <div class="player-horizontal-info">
                 <p style="font-size:0.75rem; color:#85929e; text-transform: uppercase; font-weight:bold;">Tocando Agora</p>
@@ -645,43 +586,12 @@
         <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
     </section>
 
-    <!-- ====== BANCO DE DADOS (exemplo com mp3Url) ====== -->
-    <script>
-        // BANCO DE DADOS ACESSO COMPARTILHADO
-        const musicDatabase = [
-            { 
-                id: 1, 
-                title: "A Casa", 
-                composer: "Vinicius de Moraes / Toquinho", 
-                book: "Arca de Noé", 
-                pdfUrl: "partituras/a_casa.pdf", 
-                youtubeUrl: "https://www.youtube.com/watch?v=K3DEgVGA0Gs",
-                mp3Url: "musicas/a_casa.mp3"  // <-- NOVO CAMPO
-            },
-            { 
-                id: 2, 
-                title: "O Caderno", 
-                composer: "Toquinho", 
-                book: "Música na Infância Vol. 1", 
-                pdfUrl: "partituras/o_caderno.pdf", 
-                youtubeUrl: "https://www.youtube.com/watch?v=_0mpldsbZdc",
-                mp3Url: "musicas/o_caderno.mp3"
-            }
-        ];
+    <!-- Carrega o banco de dados primeiro -->
+    <script src="dados.js"></script>
 
-        // Função auxiliar para extrair o ID do YouTube
-        function getYouTubeId(url) {
-            if (!url) return null;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
-    </script>
-
+    <!-- Script principal -->
     <script>
-        // ============================================
-        // CÓDIGO PRINCIPAL (com suporte a MP3)
-        // ============================================
+        // Função auxiliar local (já existe em dados.js, mas repetimos por segurança)
         function localGetYouTubeId(url) {
             if (!url) return null;
             url = url.trim();
@@ -691,7 +601,7 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Script da API do YouTube
+        // Carrega a API do YouTube
         let tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         let firstScriptTag = document.getElementsByTagName('script')[0];
@@ -717,7 +627,7 @@
         const currentPlayingMeta = document.getElementById('currentPlayingMeta');
 
         let globalPlayer = null;
-        let userPlaylist = []; 
+        let userPlaylist = [];
         let activePlaylistIndex = -1;
         let currentlyPlayingMusicId = null;
         let isListView = true;
@@ -728,7 +638,10 @@
         });
 
         function initFilters() {
-            if (typeof musicDatabase === 'undefined') return;
+            if (typeof musicDatabase === 'undefined') {
+                console.error('musicDatabase não encontrado. Verifique se dados.js foi carregado.');
+                return;
+            }
             const composers = [...new Set(musicDatabase.map(m => m.composer))].sort();
             const books = [...new Set(musicDatabase.map(m => m.book))].sort();
             filterComposer.innerHTML = '<option value="">Compositores</option>';
@@ -747,12 +660,12 @@
             pdfPreviewTitle.textContent = `Partitura: ${title}`;
             pdfIframe.src = url;
             pdfPreviewPanel.style.display = 'flex';
-            resizerRight.style.display = 'flex'; 
+            resizerRight.style.display = 'flex';
         }
 
         function closePdfPreview() {
             pdfPreviewPanel.style.display = 'none';
-            resizerRight.style.display = 'none'; 
+            resizerRight.style.display = 'none';
             pdfIframe.src = "";
         }
 
@@ -760,7 +673,6 @@
             isListView = !isListView;
             const icon = document.getElementById('viewIcon');
             const label = document.getElementById('viewLabel');
-            
             if (isListView) {
                 icon.textContent = '☰';
                 label.textContent = 'Lista';
@@ -811,7 +723,7 @@
         function onGlobalPlayerStateChange(event) {
             if (event.data === YT.PlayerState.PLAYING) {
                 let playlistIdx = userPlaylist.findIndex(id => id === currentlyPlayingMusicId);
-                if(playlistIdx !== -1) {
+                if (playlistIdx !== -1) {
                     activePlaylistIndex = playlistIdx;
                     updatePlaylistUI();
                 }
@@ -934,7 +846,7 @@
             event.target.value = '';
         }
 
-        // Função para abrir MP3 em nova aba
+        // Função para abrir MP3
         function openMp3(url) {
             if (url) {
                 window.open(url, '_blank');
@@ -944,7 +856,10 @@
         }
 
         function renderCatalog() {
-            if (typeof musicDatabase === 'undefined') return;
+            if (typeof musicDatabase === 'undefined') {
+                console.error('musicDatabase não definido. Verifique o carregamento de dados.js');
+                return;
+            }
 
             const query = searchGeneral.value.toLowerCase();
             const selectedComposer = filterComposer.value;
@@ -961,27 +876,23 @@
             if (mode === 'single' && filtered.length > 0) filtered = [filtered[0]];
             catalogGrid.innerHTML = "";
 
-            if (filtered.length === 0) { 
-                catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`; 
-                return; 
+            if (filtered.length === 0) {
+                catalogGrid.innerHTML = `<div class="no-results">Nenhuma música encontrada.</div>`;
+                return;
             }
 
             filtered.forEach(music => {
                 const card = document.createElement('div');
                 card.className = `music-card ${music.id === currentlyPlayingMusicId ? 'playing-now' : ''}`;
                 card.id = `card-${music.id}`;
-                
+
                 const safeTitle = music.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-                const isList = isListView;
-                
-                // Monta os botões
                 let buttonsHTML = `
                     <button class="btn-view-pdf" onclick="openPdfPreview('${safeTitle}', '${music.pdfUrl}')">📄 Ver Partitura</button>
                     <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Fila</button>
                     <button class="btn-play-now" onclick="playMusic(${music.id})">▶️ Ouvir Agora</button>
                 `;
-                // Se tiver MP3, adiciona o botão
                 if (music.mp3Url) {
                     buttonsHTML += `<button class="btn-mp3" onclick="openMp3('${music.mp3Url}')">🎵 MP3</button>`;
                 }
@@ -990,16 +901,14 @@
                     <div class="music-info">
                         <h3>${music.title} - ${music.composer}</h3>
                         <div class="music-meta">
-                            ${isList ? 
+                            ${isListView ?
                                 `<p>${music.book ? '📖 ' + music.book : ''}</p>` :
                                 `<p><strong>Compositor:</strong> ${music.composer}</p>
                                  <p><strong>Livro:</strong> ${music.book}</p>`
                             }
                         </div>
                     </div>
-                    <div class="actions">
-                        ${buttonsHTML}
-                    </div>
+                    <div class="actions">${buttonsHTML}</div>
                 `;
                 catalogGrid.appendChild(card);
             });
@@ -1011,14 +920,14 @@
                 startX = e.clientX;
                 startWidth = parseInt(document.defaultView.getComputedStyle(targetElement).width, 10);
                 resizer.classList.add('dragging');
-                pdfIframe.style.pointerEvents = 'none'; 
+                pdfIframe.style.pointerEvents = 'none';
                 const doDrag = (ev) => {
                     if (side === 'left') targetElement.style.width = (startWidth + ev.clientX - startX) + 'px';
                     else if (side === 'right') targetElement.style.width = (startWidth - (ev.clientX - startX)) + 'px';
                 };
                 const stopDrag = () => {
                     resizer.classList.remove('dragging');
-                    pdfIframe.style.pointerEvents = 'auto'; 
+                    pdfIframe.style.pointerEvents = 'auto';
                     document.documentElement.removeEventListener('mousemove', doDrag);
                     document.documentElement.removeEventListener('mouseup', stopDrag);
                 };
@@ -1036,8 +945,12 @@
         viewModeRadios.forEach(radio => radio.addEventListener('change', renderCatalog));
         btnClosePreview.addEventListener('click', closePdfPreview);
         btnClear.addEventListener('click', () => {
-            searchGeneral.value = ""; filterComposer.value = ""; filterBook.value = ""; viewModeRadios[0].checked = true;
-            closePdfPreview(); renderCatalog();
+            searchGeneral.value = "";
+            filterComposer.value = "";
+            filterBook.value = "";
+            viewModeRadios[0].checked = true;
+            closePdfPreview();
+            renderCatalog();
         });
 
         window.addEventListener('DOMContentLoaded', () => {

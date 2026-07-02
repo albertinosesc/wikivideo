@@ -297,13 +297,13 @@
 
         .catalog-list .music-card {
             display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-columns: 1fr 2fr 1.2fr; /* Aumentei a terceira coluna para caber 4 botões */
             align-items: center;
-            gap: 15px;
-            padding: 8px 15px;
+            gap: 12px;
+            padding: 6px 12px;
             border-top: 2px solid var(--accent-color);
             border-radius: 4px;
-            min-height: 50px;
+            min-height: 44px;
         }
 
         .catalog-list .music-card .music-info {
@@ -313,13 +313,13 @@
         }
 
         .catalog-list .music-card .music-info h3 {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             margin-bottom: 0;
             color: var(--primary-color);
         }
 
         .catalog-list .music-card .music-meta {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #7f8c8d;
             line-height: 1.2;
         }
@@ -331,15 +331,16 @@
         .catalog-list .music-card .actions {
             display: flex;
             flex-direction: row;
-            gap: 6px;
+            gap: 4px;
             margin-top: 0;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .catalog-list .music-card .actions button {
             width: auto;
-            padding: 4px 12px;
-            font-size: 0.75rem;
+            padding: 3px 8px;
+            font-size: 0.7rem;
             white-space: nowrap;
             border-radius: 3px;
         }
@@ -361,6 +362,14 @@
 
         .catalog-list .music-card .btn-play-now:hover {
             background-color: #d35400;
+        }
+
+        .catalog-list .music-card .btn-mp3 {
+            background-color: #8e44ad;
+            color: white;
+        }
+        .catalog-list .music-card .btn-mp3:hover {
+            background-color: #6c3483;
         }
 
         .catalog-list .music-card.playing-now {
@@ -405,11 +414,11 @@
             margin-top: 10px;
         }
 
-        .btn-view-pdf, .btn-add-playlist, .btn-play-now {
+        .btn-view-pdf, .btn-add-playlist, .btn-play-now, .btn-mp3 {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             border: none;
             padding: 8px 12px;
             border-radius: 4px;
@@ -425,6 +434,8 @@
         .btn-add-playlist:hover { background-color: #212f3d; }
         .btn-play-now { background-color: #e67e22; color: white; }
         .btn-play-now:hover { background-color: #d35400; }
+        .btn-mp3 { background-color: #8e44ad; color: white; }
+        .btn-mp3:hover { background-color: #6c3483; }
 
         /* PAINEL HORIZONTAL DO PLAYER */
         .player-horizontal-container {
@@ -524,10 +535,13 @@
             .catalog-list .music-card .actions {
                 flex-direction: row;
                 flex-wrap: wrap;
+                justify-content: center;
             }
             .catalog-list .music-card .actions button {
                 flex: 1;
-                min-width: 80px;
+                min-width: 60px;
+                font-size: 0.7rem;
+                padding: 4px 8px;
             }
             
             .player-horizontal-container { flex-direction: column; height: auto; align-items: stretch; }
@@ -631,8 +645,43 @@
         <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
     </section>
 
-    <script src="dados.js"></script>
+    <!-- ====== BANCO DE DADOS (exemplo com mp3Url) ====== -->
     <script>
+        // BANCO DE DADOS ACESSO COMPARTILHADO
+        const musicDatabase = [
+            { 
+                id: 1, 
+                title: "A Casa", 
+                composer: "Vinicius de Moraes / Toquinho", 
+                book: "Arca de Noé", 
+                pdfUrl: "partituras/a_casa.pdf", 
+                youtubeUrl: "https://www.youtube.com/watch?v=K3DEgVGA0Gs",
+                mp3Url: "musicas/a_casa.mp3"  // <-- NOVO CAMPO
+            },
+            { 
+                id: 2, 
+                title: "O Caderno", 
+                composer: "Toquinho", 
+                book: "Música na Infância Vol. 1", 
+                pdfUrl: "partituras/o_caderno.pdf", 
+                youtubeUrl: "https://www.youtube.com/watch?v=_0mpldsbZdc",
+                mp3Url: "musicas/o_caderno.mp3"
+            }
+        ];
+
+        // Função auxiliar para extrair o ID do YouTube
+        function getYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+    </script>
+
+    <script>
+        // ============================================
+        // CÓDIGO PRINCIPAL (com suporte a MP3)
+        // ============================================
         function localGetYouTubeId(url) {
             if (!url) return null;
             url = url.trim();
@@ -671,7 +720,7 @@
         let userPlaylist = []; 
         let activePlaylistIndex = -1;
         let currentlyPlayingMusicId = null;
-        let isListView = true;  // MUDANÇA: Começa com LISTA
+        let isListView = true;
 
         btnToggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
@@ -885,6 +934,15 @@
             event.target.value = '';
         }
 
+        // Função para abrir MP3 em nova aba
+        function openMp3(url) {
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                alert("MP3 não disponível para esta música.");
+            }
+        }
+
         function renderCatalog() {
             if (typeof musicDatabase === 'undefined') return;
 
@@ -917,6 +975,17 @@
 
                 const isList = isListView;
                 
+                // Monta os botões
+                let buttonsHTML = `
+                    <button class="btn-view-pdf" onclick="openPdfPreview('${safeTitle}', '${music.pdfUrl}')">📄 Ver Partitura</button>
+                    <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Fila</button>
+                    <button class="btn-play-now" onclick="playMusic(${music.id})">▶️ Ouvir Agora</button>
+                `;
+                // Se tiver MP3, adiciona o botão
+                if (music.mp3Url) {
+                    buttonsHTML += `<button class="btn-mp3" onclick="openMp3('${music.mp3Url}')">🎵 MP3</button>`;
+                }
+
                 card.innerHTML = `
                     <div class="music-info">
                         <h3>${music.title} - ${music.composer}</h3>
@@ -929,9 +998,7 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <button class="btn-view-pdf" onclick="openPdfPreview('${safeTitle}', '${music.pdfUrl}')">📄 Ver Partitura</button>
-                        <button class="btn-add-playlist" onclick="addToPlaylist(${music.id})">➕ Adicionar à Fila</button>
-                        <button class="btn-play-now" onclick="playMusic(${music.id})">▶️ Ouvir Agora</button>
+                        ${buttonsHTML}
                     </div>
                 `;
                 catalogGrid.appendChild(card);
